@@ -35,8 +35,6 @@ Route::middleware(['auth'])->group(function () {
         // Tagihan
         Route::post('tagihan/generate-bulk', [TagihanController::class, 'generateBulk'])
             ->name('tagihan.generate-bulk');
-        Route::get('tagihan/pdf', [TagihanController::class, 'downloadPdf'])
-            ->name('tagihan.pdf');
         Route::get('tagihan/cetak-periode', [TagihanController::class, 'cetakPeriode'])
         ->name('tagihan.cetak.periode');
         Route::resource('tagihan', TagihanController::class);
@@ -50,11 +48,6 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/pembayaran/{id}/edit', [PembayaranController::class, 'edit'])->name('pembayaran.edit');
         Route::put('/pembayaran/{id}', [PembayaranController::class, 'update'])->name('pembayaran.update');
         Route::delete('/pembayaran/{id}', [PembayaranController::class, 'destroy'])->name('pembayaran.destroy');
-
-        // Export Semua Bukti Pembayaran
-        // Route::get('/export/semua-bukti-pembayaran',
-        //     [PembayaranController::class, 'exportSemuaBuktiPembayaranPDF']
-        // )->name('pembayaran.export.semua');
 
         // Lokasi pelanggan
         Route::get('lokasi-pelanggan', [LokasiPelangganController::class, 'index'])
