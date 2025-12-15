@@ -6,7 +6,6 @@ use App\Models\Tagihan;
 use App\Models\Pelanggan;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
-use Barryvdh\DomPDF\Facade\Pdf;
 
 class TagihanController extends Controller
 {
@@ -59,8 +58,6 @@ class TagihanController extends Controller
 
     return view('tagihan.cetak-semua', compact('tagihan'));
 }
-
-
 
     public function store(Request $request)
     {
@@ -162,23 +159,6 @@ class TagihanController extends Controller
             ->route('tagihan.show', $tagihan->id_tagihan)
             ->with('success', 'Tagihan berhasil diperbarui.');
     }
-
-    public function downloadPdf(Request $request)
-{
-    // optional filter periode
-    $query = Tagihan::with('pelanggan');
-
-    if ($request->filled('periode')) {
-        $query->where('periode', $request->periode);
-    }
-
-    $tagihan = $query->orderBy('id_pelanggan')->get();
-
-    $pdf = Pdf::loadView('tagihan.pdf', compact('tagihan'))
-        ->setPaper('A4', 'portrait');
-
-    return $pdf->download('bukti-tagihan.pdf');
-}
 
     // public function destroy(Tagihan $tagihan)
     // {
