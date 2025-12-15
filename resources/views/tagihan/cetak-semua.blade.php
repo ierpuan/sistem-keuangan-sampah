@@ -93,15 +93,6 @@
             font-weight: bold;
         }
 
-        .keterangan {
-            margin-top: 8px;
-            padding-top: 6px;
-            border-top: 1px dashed #999;
-            font-size: 9px;
-            color: #666;
-            margin-top: auto; /* Push ke bawah */
-        }
-
         /* Print styles */
         @media print {
             body {
@@ -150,16 +141,16 @@
             </tr>
             <tr>
                 <td>Periode</td>
-                <td>: {{ $t->periode }}</td>
+                <td>: {{ $t->periode}}</td>
             </tr>
-            <tr>
+            {{-- <tr>
                 <td>Jatuh Tempo</td>
                 <td>: {{ $t->jatuh_tempo->format('d-m-Y') }}</td>
-            </tr>
-            <tr>
+            </tr> --}}
+            {{-- <tr>
                 <td>Status</td>
                 <td>: <strong>{{ $t->status }}</strong></td>
-            </tr>
+            </tr> --}}
             <tr>
                 <td>Keterangan</td>
                 <td>: ....................</td>
@@ -173,7 +164,7 @@
                     Rp {{ number_format($t->jml_tagihan_pokok, 0, ',', '.') }}
                 </td>
             </tr>
-            <tr>
+            {{-- <tr>
                 <td>Terbayar</td>
                 <td class="right">
                     Rp {{ number_format($t->total_sudah_bayar, 0, ',', '.') }}
@@ -184,7 +175,7 @@
                 <td class="right">
                     Rp {{ number_format($t->jml_tagihan_pokok - $t->total_sudah_bayar, 0, ',', '.') }}
                 </td>
-            </tr>
+            </tr> --}}
         </table>
 
     </div>
