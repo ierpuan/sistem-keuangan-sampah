@@ -39,16 +39,16 @@ class TransaksiPembayaran extends Model
     }
 
     // Event setelah pembayaran dibuat
-    protected static function booted()
-    {
-        static::created(function ($transaksi) {
-            // Update total sudah bayar di tagihan
-            $tagihan = $transaksi->tagihan;
-            $tagihan->total_sudah_bayar += $transaksi->jml_bayar_input;
-            $tagihan->save();
+    // protected static function booted()
+    // {
+    //     static::created(function ($transaksi) {
+    //         // Update total sudah bayar di tagihan
+    //         $tagihan = $transaksi->tagihan;
+    //         $tagihan->total_sudah_bayar += $transaksi->jml_bayar_input;
+    //         $tagihan->save();
 
-            // Update status tagihan
-            $tagihan->updateStatus();
-        });
-    }
+    //         // Update status tagihan
+    //         $tagihan->updateStatus();
+    //     });
+    // }
 }
