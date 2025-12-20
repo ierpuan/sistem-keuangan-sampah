@@ -4,8 +4,8 @@
 
 @section('content')
 <div class="mb-6">
-    <h1 class="text-3xl font-bold text-gray-800">Edit Pengeluaran</h1>
-    <p class="text-gray-600">Update data pengeluaran</p>
+    <h1 class="text-2xl font-bold text-gray-800">Edit Pengeluaran</h1>
+    <p class="text-sm text-gray-600">Update data pengeluaran</p>
 </div>
 
 <div class="bg-white rounded-lg shadow p-6">
