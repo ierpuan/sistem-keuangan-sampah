@@ -108,7 +108,8 @@
     </aside>
 
     {{-- AREA KANAN --}}
-    <div class="flex-1 flex flex-col lg:ml-64">
+    <div class="flex-1 min-w-0 flex flex-col lg:ml-64">
+
 
         {{-- TOPBAR --}}
         <header class="fixed top-0 left-0 lg:left-64 right-0 h-16 bg-white border-b border-gray-200 flex items-center justify-between px-4 lg:px-8 z-30 shadow-sm">
@@ -140,7 +141,8 @@
         </header>
 
         {{-- KONTEN --}}
-        <main class="flex-1 pt-20 px-4 lg:px-8 pb-8">
+        <main class="flex-1 min-w-0 pt-20 px-4 lg:px-8 pb-8 overflow-x-auto">
+
             {{-- Alert Messages --}}
             @if(session('success'))
                 <div class="mb-6 bg-green-50 border-l-4 border-green-500 text-green-800 p-3 lg:p-4 rounded-lg shadow-sm animate-fade-in">
