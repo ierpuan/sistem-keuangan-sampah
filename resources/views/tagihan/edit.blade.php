@@ -1,117 +1,146 @@
-<!DOCTYPE html>
-<html lang="id">
-<head>
-    <meta charset="UTF-8">
-    <title>Bukti Tagihan</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+@extends('layouts.app')
 
-        body {
-            font-family: Arial, sans-serif;
-            font-size: 11px;
-            margin: 0;
-            padding: 15mm;
-        }
+@section('title', 'Edit Tagihan')
 
-        .header {
-            text-align: center;
-            margin-bottom: 20px;
-            border-bottom: 2px solid #000;
-            padding-bottom: 10px;
-        }
-
-        .header h3 {
-            font-size: 16px;
-            margin-bottom: 5px;
-            font-weight: bold;
-        }
-
-        .header p {
-            font-size: 12px;
-            color: #555;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-
-        thead th {
-            background: #f0f0f0;
-            border: 1px solid #000;
-            padding: 8px 6px;
-            font-size: 11px;
-            font-weight: bold;
-            text-align: center;
-        }
-
-        tbody td {
-            border: 1px solid #000;
-            padding: 6px;
-            font-size: 11px;
-        }
-
-        .right {
-            text-align: right;
-        }
-
-        .center {
-            text-align: center;
-        }
-
-        /* Print styles */
-        @media print {
-            body {
-                margin: 0;
-                padding: 15mm;
-            }
-
-            @page {
-                size: A4;
-                margin: 0;
-            }
-        }
-    </style>
-</head>
-<body onload="window.print()">
-
-<div class="header">
-    <h3>BUKTI TAGIHAN</h3>
-    <p>Sistem Pengelolaan Sampah</p>
+@section('content')
+<div class="mb-4">
+    <h1 class="text-2xl font-bold text-gray-800">Edit Tagihan</h1>
+    <nav class="flex text-xs text-gray-600 mt-2" aria-label="breadcrumb">
+        <a href="{{ route('dashboard') }}" class="hover:text-gray-800">Dashboard</a>
+        <span class="mx-2">/</span>
+        <a href="{{ route('tagihan.index') }}" class="hover:text-gray-800">Tagihan</a>
+        <span class="mx-2">/</span>
+        <span class="text-gray-800 font-medium">Edit</span>
+    </nav>
 </div>
 
-<table>
-    <thead>
-        <tr>
-            <th width="5%">No</th>
-            <th width="25%">Pelanggan</th>
-            <th width="12%">Periode</th>
-            <th width="15%">Tagihan</th>
-            <th width="15%">Dibayar</th>
-            <th width="15%">Sisa</th>
-            <th width="13%">Status</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach($tagihan as $i => $t)
-        <tr>
-            <td class="center">{{ $i + 1 }}</td>
-            <td>{{ $t->pelanggan->nama }}</td>
-            <td class="center">{{ $t->periode }}</td>
-            <td class="right">Rp {{ number_format($t->jml_tagihan_pokok, 0, ',', '.') }}</td>
-            <td class="right">Rp {{ number_format($t->total_sudah_bayar, 0, ',', '.') }}</td>
-            <td class="right">
-                Rp {{ number_format($t->jml_tagihan_pokok - $t->total_sudah_bayar, 0, ',', '.') }}
-            </td>
-            <td class="center">{{ $t->status }}</td>
-        </tr>
-        @endforeach
-    </tbody>
-</table>
+<div class="bg-white rounded-lg shadow">
+    <!-- Header -->
+    <div class="bg-gradient-to-r from-gray-700 to-gray-800 text-white px-4 py-4 rounded-t-lg">
+        <div class="flex items-center justify-between">
+            <div>
+                <h2 class="text-xl font-bold mb-1">Edit Data Tagihan</h2>
+                <p class="text-xs text-gray-200">Update informasi tagihan pelanggan</p>
+            </div>
+            <div class="hidden sm:block">
+                <i class="fas fa-edit text-4xl text-gray-300 opacity-50"></i>
+            </div>
+        </div>
+    </div>
 
-</body>
-</html>
+    <!-- Content -->
+    <div class="p-4">
+        <!-- Info Box -->
+        <div class="mb-4 bg-blue-50 border-l-4 border-blue-500 p-3 rounded">
+            <div class="flex items-start gap-2">
+                <i class="fas fa-info-circle text-blue-600 mt-0.5"></i>
+                <div class="text-xs text-blue-800">
+                    <strong class="font-semibold">Perhatian:</strong> Anda hanya dapat mengedit jumlah tagihan dan tanggal jatuh tempo untuk tagihan yang belum memiliki riwayat pembayaran.
+                </div>
+            </div>
+        </div>
+
+        <form method="POST" action="{{ route('tagihan.update', $tagihan->id_tagihan) }}">
+            @csrf
+            @method('PUT')
+
+            <!-- Info Pelanggan (Read-only) -->
+            <div class="mb-4 bg-gray-50 rounded-lg p-3 border border-gray-200">
+                <h3 class="text-sm font-semibold text-gray-700 mb-3 flex items-center">
+                    <i class="fas fa-user text-gray-500 mr-2"></i>
+                    Informasi Pelanggan
+                </h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-600 mb-1">Nama Pelanggan</label>
+                        <input type="text"
+                               value="{{ $tagihan->pelanggan->nama }}"
+                               class="w-full border border-gray-300 rounded px-3 py-2 bg-white text-sm text-gray-700 cursor-not-allowed"
+                               readonly>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-600 mb-1">Periode Tagihan</label>
+                        <input type="text"
+                               value="{{ $tagihan->periode }}"
+                               class="w-full border border-gray-300 rounded px-3 py-2 bg-white text-sm text-gray-700 cursor-not-allowed"
+                               readonly>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Form Edit -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                <!-- Jumlah Tagihan -->
+                <div>
+                    <label class="block text-xs font-semibold text-gray-700 mb-1">
+                        Jumlah Tagihan Pokok <span class="text-red-500">*</span>
+                    </label>
+                    <div class="relative">
+                        <span class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 text-sm">Rp</span>
+                        <input type="number"
+                               name="jml_tagihan_pokok"
+                               value="{{ old('jml_tagihan_pokok', $tagihan->jml_tagihan_pokok) }}"
+                               class="w-full border rounded px-3 py-2 pl-10 text-sm @error('jml_tagihan_pokok') border-red-500 @else border-gray-300 @enderror focus:ring-0 focus:border-gray-300"
+                               min="0"
+                               step="1000"
+                               placeholder="Masukkan jumlah tagihan"
+                               required>
+                    </div>
+                    @error('jml_tagihan_pokok')
+                        <p class="text-red-600 text-xs mt-1 flex items-center gap-1">
+                            <i class="fas fa-exclamation-circle"></i>
+                            {{ $message }}
+                        </p>
+                    @enderror
+                    <p class="text-xs text-gray-500 mt-1">
+                        <i class="fas fa-lightbulb text-yellow-500 mr-1"></i>
+                        masukkan jumlah tagihan pokok dalam rupiah
+                    </p>
+                </div>
+
+                <!-- Jatuh Tempo -->
+                <div>
+                    <label class="block text-xs font-semibold text-gray-700 mb-1">
+                        Tanggal Jatuh Tempo <span class="text-red-500">*</span>
+                    </label>
+                    <div class="relative">
+                        <input type="date"
+                               name="jatuh_tempo"
+                               value="{{ old('jatuh_tempo', $tagihan->jatuh_tempo->format('Y-m-d')) }}"
+                               class="w-full border rounded px-3 py-2 text-sm @error('jatuh_tempo') border-red-500 @else border-gray-300 @enderror focus:ring-0 focus:border-gray-300"
+                               required>
+                        <i class="fas fa-calendar-alt absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none"></i>
+                    </div>
+                    @error('jatuh_tempo')
+                        <p class="text-red-600 text-xs mt-1 flex items-center gap-1">
+                            <i class="fas fa-exclamation-circle"></i>
+                            {{ $message }}
+                        </p>
+                    @enderror
+                    <p class="text-xs text-gray-500 mt-1">
+                        <i class="fas fa-info-circle mr-1"></i>
+                        Pilih tanggal jatuh tempo pembayaran
+                    </p>
+                </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="border-t border-gray-200 pt-4">
+                <div class="flex flex-wrap gap-2">
+                    <button type="submit"
+                            class="bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded text-sm transition flex items-center gap-2">
+                        <i class="fas fa-save"></i>
+                        <span>Simpan Perubahan</span>
+                    </button>
+                    <a href="{{ route('tagihan.index', $tagihan->id_tagihan) }}"
+                       class="bg-gray-300 hover:bg-gray-400 text-gray-800 px-4 py-2 rounded text-sm transition flex items-center gap-2">
+                        <i class="fas fa-times"></i>
+                        <span>Batal</span>
+                    </a>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+@endsection
