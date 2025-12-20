@@ -13,6 +13,13 @@ class LokasiPelangganController extends Controller
                          ->whereNotNull('latitude')
                          ->whereNotNull('longitude');
 
+    if ($request->filled('search')) {
+        $search = $request->search;
+           $query->where(function($q) use ($search) {
+           $q->where('nama', 'like', '%' . $search . '%')
+           ->orWhere('alamat', 'like', '%' . $search . '%');
+    });
+    }
         // Filter berdasarkan dusun
         if ($request->filled('dusun')) {
             $query->where('dusun', $request->dusun);
@@ -31,6 +38,7 @@ class LokasiPelangganController extends Controller
         $pelanggan = $query->get();
 
         // Get unique values untuk filter dropdown
+
         $dusun_list = Pelanggan::where('status_aktif', 'Aktif')
                               ->whereNotNull('dusun')
                               ->distinct()
