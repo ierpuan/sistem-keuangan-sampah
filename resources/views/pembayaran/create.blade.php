@@ -3,75 +3,108 @@
 @section('title', 'Pembayaran Tagihan')
 
 @section('content')
-<div class="mb-6">
-    <h1 class="text-3xl font-bold text-gray-800">Pembayaran Tagihan</h1>
-    <p class="text-gray-600">Catat pembayaran pelanggan</p>
+<div class="mb-4">
+    <h1 class="text-2xl font-bold text-gray-800">Pembayaran Tagihan</h1>
+    <nav class="flex text-xs text-gray-600 mt-2" aria-label="breadcrumb">
+        <a href="{{ route('dashboard') }}" class="hover:text-gray-800">Dashboard</a>
+        <span class="mx-2">/</span>
+        <a href="{{ route('tagihan.index') }}" class="hover:text-gray-800">Tagihan</a>
+        <span class="mx-2">/</span>
+        <span class="text-gray-800 font-medium">Pembayaran</span>
+    </nav>
 </div>
 
-    <!-- Form Pembayaran -->
-<div class="bg-white rounded-lg shadow p-6">
-    <h2 class="text-xl font-bold text-gray-800 mb-4">Form Pembayaran</h2>
+<div class="bg-white rounded-lg shadow">
+    <!-- Header -->
+    <div class="bg-gradient-to-r from-gray-700 to-gray-800 text-white px-4 py-4 rounded-t-lg">
+        <h2 class="text-xl font-bold">Form Pembayaran</h2>
+        <p class="text-xs text-gray-200 mt-1">Catat pembayaran pelanggan</p>
+    </div>
 
-    <form method="POST" action="{{ route('pembayaran.store') }}">
-        @csrf
-        <input type="hidden" name="id_tagihan" value="{{ $tagihan->id_tagihan }}">
+    <!-- Content -->
+    <div class="p-4">
+        <form method="POST" action="{{ route('pembayaran.store') }}">
+            @csrf
+            <input type="hidden" name="id_tagihan" value="{{ $tagihan->id_tagihan }}">
 
-        <!-- Info Pelanggan -->
-        <div class="mb-4 text-sm text-gray-700">
-            <p><strong>Pelanggan:</strong> {{ $tagihan->pelanggan->nama }}</p>
-        </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                <!-- Info Kiri -->
+                <div class="space-y-3">
+                    <!-- Info Pelanggan -->
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-600 mb-1">Pelanggan</label>
+                        <p class="text-sm text-gray-800 font-medium">{{ $tagihan->pelanggan->nama }}</p>
+                    </div>
 
-        <!-- Total Tagihan -->
-        <div class="mb-4 text-sm text-gray-700">
-            <p>
-                <strong>Total Kewajiban Bayar</strong><br>
-                Rp. {{ number_format($tagihan->sisa_tagihan, 0, ',', '.') }}
-            </p>
-        </div>
+                    <!-- Periode -->
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-600 mb-1">Periode Tagihan</label>
+                        <p class="text-sm text-gray-800">{{ $tagihan->periode }}</p>
+                    </div>
 
-        <!-- Input Pembayaran -->
-        <div class="mb-4">
-            <label class="block text-sm font-medium text-gray-700 mb-1">
-                Jumlah Pembayaran <span class="text-red-500">*</span>
-                <p> <small class="text-gray-500"> input nominal tanpa tanda titik (.) atau koma (,) </small> </p>
-            </label>
-                   <input type="number" name="jml_bayar_input" id="jml_bayar_input"
-                   class="w-80 rounded px-2 py-1"
-                   placeholder="contoh: 10000"
-                   value="{{ old('jml_bayar_input') }}"
-                   min="0">
+                    <!-- Total Tagihan -->
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-600 mb-1">Total Kewajiban Bayar</label>
+                        <p class="text-lg text-gray-800 font-bold">Rp {{ number_format($tagihan->sisa_tagihan, 0, ',', '.') }}</p>
+                    </div>
+                </div>
 
-        </div>
+                <!-- Info Kanan -->
+                <div class="space-y-3">
+                    <!-- Input Pembayaran -->
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-600 mb-1">
+                            Jumlah Pembayaran <span class="text-red-500">*</span>
+                        </label>
+                        <input type="number"
+                               name="jml_bayar_input"
+                               id="jml_bayar_input"
+                               class="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gray-500"
+                               placeholder="contoh: 10000"
+                               value="{{ old('jml_bayar_input') }}"
+                               min="0">
+                        <p class="text-xs text-gray-500 mt-1">Input nominal tanpa tanda titik (.) atau koma (,)</p>
+                        @error('jml_bayar_input')
+                            <p class="text-xs text-red-600 mt-1">{{ $message }}</p>
+                        @enderror
+                    </div>
 
-        <!-- Info Deposit -->
-        @if($tagihan->pelanggan->deposit)
-            <div class="text-sm text-gray-700 mb-2">
-                <p>
-                    <strong>Saldo deposit:</strong>
-                    Rp. {{ number_format($tagihan->pelanggan->deposit->saldo_deposit, 0, ',', '.') }}
-                </p>
-
-                <label class="flex items-center mt-2 text-sm">
-                    <input type="checkbox" name="gunakan_deposit" value="1" class="mr-2"
-                           {{ old('gunakan_deposit') ? 'checked' : '' }}>
-                    Gunakan saldo untuk membayar
-                </label>
-
+                    <!-- Info Deposit -->
+                    @if($tagihan->pelanggan->deposit)
+                    <div class="bg-green-50 border border-green-200 rounded p-3">
+                        <label class="block text-xs font-semibold text-green-700 mb-1">Saldo Deposit</label>
+                        <p class="text-sm text-green-800 font-bold mb-2">
+                            Rp {{ number_format($tagihan->pelanggan->deposit->saldo_deposit, 0, ',', '.') }}
+                        </p>
+                        <label class="flex items-center text-xs text-gray-700">
+                            <input type="checkbox"
+                                   name="gunakan_deposit"
+                                   value="1"
+                                   class="mr-2 rounded text-green-600 focus:ring-green-500"
+                                   {{ old('gunakan_deposit') ? 'checked' : '' }}>
+                            <span class="font-medium">Gunakan saldo untuk membayar</span>
+                        </label>
+                    </div>
+                    @endif
+                </div>
             </div>
-        @endif
 
-        <!-- Tombol -->
-        <div class="flex justify-end gap-2 mt-6">
-            <a href="{{ route('tagihan.index', $tagihan->id_tagihan) }}"
-               class="bg-gray-300 hover:bg-gray-400 text-gray-800 px-5 py-2 rounded">
-                Batal
-            </a>
-            <button type="submit"
-                    class="bg-gray-600 hover:bg-gray-700 text-white px-5 py-2 rounded">
-                Bayar
-            </button>
-        </div>
-    </form>
+            <!-- Divider -->
+            <div class="border-t border-gray-200 pt-4">
+                <!-- Tombol Aksi -->
+                <div class="flex gap-2">
+                    <a href="{{ route('tagihan.show', $tagihan->id_tagihan) }}"
+                       class="text-center bg-gray-300 hover:bg-gray-400 text-gray-800 px-4 py-2 rounded transition text-sm">
+                        <i class="fas fa-arrow-left mr-1"></i>Batal
+                    </a>
+                    <button type="submit"
+                            class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded transition text-sm">
+                        <i class="fas fa-check mr-1"></i>Bayar
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
 </div>
 
 @endsection
