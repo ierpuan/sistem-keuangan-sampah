@@ -104,41 +104,43 @@ class PembayaranController extends Controller
 public function destroy($id)
 {
     DB::beginTransaction();
+
     try {
+        // ======================
+        // Ambil data transaksi & relasi
+        // ======================
         $transaksi = TransaksiPembayaran::with('tagihan.pelanggan.deposit')
             ->findOrFail($id);
 
         $tagihan = $transaksi->tagihan;
-        $deposit = $tagihan->pelanggan->deposit;
-
-        $jumlah = (float) $transaksi->jml_bayar_input;
+        $deposit = optional($tagihan->pelanggan)->deposit;
+        $jumlahBayar = (float) $transaksi->jml_bayar_input;
 
         // ======================
-        // 1. ROLLBACK TAGIHAN
+        // 1. Rollback pembayaran tagihan
         // ======================
-        $tagihan->total_sudah_bayar -= $jumlah;
+        $tagihan->total_sudah_bayar -= $jumlahBayar;
         $tagihan->total_sudah_bayar = max(0, $tagihan->total_sudah_bayar);
 
         // ======================
-        // 2. JIKA ADA KELEBIHAN → TARIK DARI DEPOSIT
+        // 2. Rollback kelebihan ke deposit (jika ada)
         // ======================
-        $sisaSetelahRollback =
-            $tagihan->jml_tagihan_pokok - $tagihan->total_sudah_bayar;
+        $sisaTagihan = $tagihan->jml_tagihan_pokok - $tagihan->total_sudah_bayar;
 
-        if ($sisaSetelahRollback < 0 && $deposit) {
-            // artinya dulu ada kelebihan masuk deposit
-            $deposit->saldo_deposit += $sisaSetelahRollback; // nilai negatif
+        if ($sisaTagihan < 0 && $deposit) {
+            // Nilai negatif → dulu masuk deposit
+            $deposit->saldo_deposit += $sisaTagihan;
             $deposit->saldo_deposit = max(0, $deposit->saldo_deposit);
             $deposit->save();
         }
 
         // ======================
-        // 3. HAPUS TRANSAKSI
+        // 3. Hapus transaksi pembayaran
         // ======================
         $transaksi->delete();
 
         // ======================
-        // 4. UPDATE STATUS
+        // 4. Update status tagihan
         // ======================
         $tagihan->save();
         $tagihan->updateStatus();
@@ -149,11 +151,15 @@ public function destroy($id)
             ->route('tagihan.show', $tagihan->id_tagihan)
             ->with('success', 'Transaksi pembayaran berhasil dihapus');
 
-    } catch (\Exception $e) {
+    } catch (\Throwable $e) {
         DB::rollBack();
-        return back()->withErrors(['error' => $e->getMessage()]);
+
+        return back()->withErrors([
+            'error' => 'Gagal menghapus transaksi: ' . $e->getMessage()
+        ]);
     }
 }
+
 
     public function store(Request $request)
 {
