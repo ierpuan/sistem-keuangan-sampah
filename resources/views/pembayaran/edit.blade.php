@@ -3,182 +3,214 @@
 @section('title', 'Edit Pembayaran')
 
 @section('content')
-<div class="mb-6">
-    <h1 class="text-3xl font-bold text-gray-800">Edit Pembayaran</h1>
-    <nav class="flex text-sm text-gray-600 mt-2" aria-label="breadcrumb">
-        <a href="{{ route('dashboard') }}" class="hover:text-blue-600">Dashboard</a>
+<div class="mb-4">
+    <h1 class="text-2xl font-bold text-gray-800">Edit Pembayaran</h1>
+    <nav class="flex text-xs text-gray-600 mt-2" aria-label="breadcrumb">
+        <a href="{{ route('dashboard') }}" class="hover:text-gray-800">Dashboard</a>
         <span class="mx-2">/</span>
-        <a href="{{ route('tagihan.index') }}" class="hover:text-blue-600">Tagihan</a>
+        <a href="{{ route('tagihan.index') }}" class="hover:text-gray-800">Tagihan</a>
         <span class="mx-2">/</span>
-        <a href="{{ route('tagihan.show', $transaksi->tagihan->id_tagihan) }}" class="hover:text-blue-600">Detail Tagihan</a>
+        <a href="{{ route('tagihan.show', $transaksi->tagihan->id_tagihan) }}" class="hover:text-gray-800">Detail Tagihan</a>
         <span class="mx-2">/</span>
         <span class="text-gray-800 font-medium">Edit Pembayaran</span>
     </nav>
 </div>
 
-<div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-    <!-- Form Edit Pembayaran -->
-    <div class="lg:col-span-2">
-        <div class="bg-white rounded-lg shadow">
-            <div class="bg-blue-600 text-white px-6 py-4 rounded-t-lg">
-                <h2 class="text-xl font-bold">Form Edit Pembayaran</h2>
+<div class="max-w-4xl mx-auto">
+    <div class="bg-white rounded-lg shadow">
+        <!-- Header -->
+        <div class="bg-gradient-to-r from-orange-600 to-orange-700 text-white px-4 py-4 rounded-t-lg">
+            <div class="flex items-center justify-between">
+                <div>
+                    <h2 class="text-xl font-bold mb-1">Edit Pembayaran</h2>
+                    <p class="text-xs text-orange-100">Perbarui data pembayaran tagihan pelanggan</p>
+                </div>
+                <div class="hidden sm:block">
+                    <i class="fas fa-edit text-4xl text-orange-300 opacity-50"></i>
+                </div>
             </div>
-            <div class="p-6">
-                @if ($errors->any())
-                    <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
-                        <ul class="list-disc list-inside mb-0">
-                            @foreach ($errors->all() as $error)
-                                <li>{{ $error }}</li>
-                            @endforeach
-                        </ul>
-                    </div>
-                @endif
+        </div>
 
-                <form action="{{ route('pembayaran.update', $transaksi->id_transaksi) }}" method="POST">
-                    @csrf
-                    @method('PUT')
-
-                    <!-- Informasi Transaksi -->
-                    <div class="mb-6">
-                        <label class="block text-sm font-bold text-gray-800 mb-2">Informasi Transaksi</label>
-                        <div class="border border-gray-200 rounded overflow-hidden">
-                            <table class="w-full text-sm">
-                                <tr class="border-b border-gray-200">
-                                    <td class="px-4 py-2 bg-gray-50 font-semibold w-48">ID Transaksi</td>
-                                    <td class="px-4 py-2">{{ $transaksi->id_transaksi }}</td>
-                                </tr>
-                                <tr class="border-b border-gray-200">
-                                    <td class="px-4 py-2 bg-gray-50 font-semibold">Tanggal Bayar</td>
-                                    <td class="px-4 py-2">{{ \Carbon\Carbon::parse($transaksi->tgl_bayar)->format('d/m/Y H:i') }}</td>
-                                </tr>
-                                <tr>
-                                    <td class="px-4 py-2 bg-gray-50 font-semibold">Petugas</td>
-                                    <td class="px-4 py-2">{{ $transaksi->pengguna->name ?? '-' }}</td>
-                                </tr>
-                            </table>
+        <!-- Body -->
+        <div class="p-4">
+            <!-- Error Messages -->
+            @if ($errors->any())
+                <div class="mb-4 bg-red-50 border-l-4 border-red-500 p-3 rounded">
+                    <div class="flex items-start gap-2">
+                        <i class="fas fa-exclamation-circle text-red-600 mt-0.5"></i>
+                        <div class="flex-1">
+                            <p class="text-xs font-semibold text-red-800 mb-1">Terdapat kesalahan:</p>
+                            <ul class="list-disc list-inside text-xs text-red-700 space-y-0.5">
+                                @foreach ($errors->all() as $error)
+                                    <li>{{ $error }}</li>
+                                @endforeach
+                            </ul>
                         </div>
                     </div>
+                </div>
+            @endif
 
-                    <!-- Informasi Tagihan -->
-                    <div class="mb-6">
-                        <label class="block text-sm font-bold text-gray-800 mb-2">Informasi Tagihan</label>
-                        <div class="border border-gray-200 rounded overflow-hidden">
-                            <table class="w-full text-sm">
-                                <tr class="border-b border-gray-200">
-                                    <td class="px-4 py-2 bg-gray-50 font-semibold w-48">Pelanggan</td>
-                                    <td class="px-4 py-2">{{ $transaksi->tagihan->pelanggan->nama_pelanggan }}</td>
-                                </tr>
-                                <tr class="border-b border-gray-200">
-                                    <td class="px-4 py-2 bg-gray-50 font-semibold">Total Tagihan</td>
-                                    <td class="px-4 py-2">Rp {{ number_format($transaksi->tagihan->total_tagihan, 0, ',', '.') }}</td>
-                                </tr>
-                                <tr class="border-b border-gray-200">
-                                    <td class="px-4 py-2 bg-gray-50 font-semibold">Sudah Dibayar</td>
-                                    <td class="px-4 py-2">Rp {{ number_format($transaksi->tagihan->total_dibayar, 0, ',', '.') }}</td>
-                                </tr>
-                                <tr>
-                                    <td class="px-4 py-2 bg-gray-50 font-semibold">Sisa Tagihan</td>
-                                    <td class="px-4 py-2 text-red-600 font-bold">Rp {{ number_format($transaksi->tagihan->sisa_tagihan, 0, ',', '.') }}</td>
-                                </tr>
-                            </table>
+            <form action="{{ route('pembayaran.update', $transaksi->id_transaksi) }}" method="POST">
+                @csrf
+                @method('PUT')
+
+                <!-- Informasi Transaksi -->
+                <div class="mb-4">
+                    <h3 class="text-sm font-bold text-gray-800 mb-2 flex items-center">
+                        <i class="fas fa-receipt text-gray-500 mr-2"></i>
+                        Informasi Transaksi
+                    </h3>
+                    <div class="bg-gray-50 rounded-lg border border-gray-200 overflow-hidden">
+                        <div class="grid grid-cols-1 sm:grid-cols-3 divide-y sm:divide-y-0 sm:divide-x divide-gray-200">
+                            <div class="px-4 py-3">
+                                <p class="text-xs text-gray-600 mb-1">ID Transaksi</p>
+                                <p class="text-sm font-bold text-gray-800">{{ $transaksi->id_transaksi }}</p>
+                            </div>
+                            <div class="px-4 py-3">
+                                <p class="text-xs text-gray-600 mb-1">Tanggal Bayar</p>
+                                <p class="text-sm font-semibold text-gray-800">
+                                    <i class="fas fa-calendar text-gray-400 mr-1"></i>
+                                    {{ \Carbon\Carbon::parse($transaksi->tgl_bayar)->format('d/m/Y H:i') }}
+                                </p>
+                            </div>
+                            <div class="px-4 py-3">
+                                <p class="text-xs text-gray-600 mb-1">Petugas</p>
+                                <p class="text-sm font-semibold text-gray-800">
+                                    <i class="fas fa-user text-gray-400 mr-1"></i>
+                                    {{ $transaksi->pengguna->nama ?? '-' }}
+                                </p>
+                            </div>
                         </div>
                     </div>
+                </div>
 
-                    <!-- Input Pembayaran -->
-                    <div class="mb-6">
-                        <label for="jml_bayar_input" class="block text-sm font-medium text-gray-700 mb-1">
-                            Jumlah Pembayaran <span class="text-red-500">*</span>
-                            <p><small class="text-gray-500">Input nominal tanpa tanda titik (.) atau koma (,)</small></p>
+                <!-- Informasi Pelanggan & Tagihan -->
+                <div class="mb-4">
+                    <h3 class="text-sm font-bold text-gray-800 mb-2 flex items-center">
+                        <i class="fas fa-file-invoice-dollar text-gray-500 mr-2"></i>
+                        Informasi Tagihan
+                    </h3>
+                    <div class="bg-blue-50 rounded-lg border border-blue-200 p-4">
+                        <!-- Pelanggan -->
+                        <div class="mb-3 pb-3 border-b border-blue-200">
+                            <p class="text-xs text-blue-700 font-semibold mb-1">Pelanggan</p>
+                            <p class="text-base font-bold text-blue-900">{{ $transaksi->tagihan->pelanggan->nama }}</p>
+                            <p class="text-xs text-blue-600 mt-1">Periode: {{ $transaksi->tagihan->periode }}</p>
+                        </div>
+
+                        <!-- Ringkasan Tagihan -->
+                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                            <div class="bg-white rounded-lg p-3 border border-blue-200">
+                                <p class="text-xs text-gray-600 mb-1">Tagihan Pokok</p>
+                                <p class="text-lg font-bold text-gray-800">
+                                    Rp {{ number_format($transaksi->tagihan->jml_tagihan_pokok, 0, ',', '.') }}
+                                </p>
+                            </div>
+                            <div class="bg-white rounded-lg p-3 border border-green-200">
+                                <p class="text-xs text-gray-600 mb-1">Sudah Dibayar</p>
+                                <p class="text-lg font-bold text-green-600">
+                                    Rp {{ number_format($transaksi->tagihan->total_sudah_bayar, 0, ',', '.') }}
+                                </p>
+                            </div>
+                            <div class="bg-white rounded-lg p-3 border border-red-200">
+                                <p class="text-xs text-gray-600 mb-1">Sisa Tagihan</p>
+                                <p class="text-lg font-bold text-red-600">
+                                    Rp {{ number_format($transaksi->tagihan->sisa_tagihan, 0, ',', '.') }}
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Form Input Pembayaran -->
+                <div class="mb-4 bg-orange-50 rounded-lg border border-orange-200 p-4">
+                    <h3 class="text-sm font-bold text-gray-800 mb-3 flex items-center">
+                        <i class="fas fa-money-bill-wave text-orange-600 mr-2"></i>
+                        Update Jumlah Pembayaran
+                    </h3>
+
+                    <div class="max-w-md">
+                        <label class="block text-xs font-semibold text-gray-700 mb-2">
+                            Jumlah Pembayaran Baru <span class="text-red-500">*</span>
                         </label>
-                        <input
-                            type="number"
-                            class="w-80 rounded px-3 py-2 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent @error('jml_bayar_input') border-red-500 @enderror"
-                            id="jml_bayar_input"
-                            name="jml_bayar_input"
-                            value="{{ old('jml_bayar_input', $transaksi->jml_bayar_input) }}"
-                            placeholder="contoh: 10000"
-                            min="1"
-                            required>
-                        <small class="block text-gray-500 mt-1">Jumlah pembayaran saat ini: Rp {{ number_format($transaksi->jml_bayar_input, 0, ',', '.') }}</small>
-                        @error('jml_bayar_input')
-                            <div class="text-red-600 text-sm mt-1">{{ $message }}</div>
-                        @enderror
-                    </div>
+                        <div class="relative">
+                            <span class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 text-sm font-semibold">Rp</span>
+                            <input type="number"
+                                   name="jml_bayar_input"
+                                   value="{{ old('jml_bayar_input', $transaksi->jml_bayar_input) }}"
+                                   min="1"
+                                   step="1000"
+                                   required
+                                   class="w-full border border-orange-300 rounded-lg px-3 py-2 pl-10 text-sm font-semibold focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
+                                   placeholder="Masukkan jumlah pembayaran">
+                        </div>
 
-                    <!-- Catatan -->
-                    <div class="bg-blue-50 border border-blue-200 rounded px-4 py-3 mb-6">
-                        <strong class="text-blue-800">📌 Catatan:</strong>
-                        <ul class="list-disc list-inside text-sm text-blue-700 mt-2 mb-0">
-                            <li>Jika jumlah pembayaran melebihi sisa tagihan, kelebihan akan masuk ke deposit pelanggan</li>
-                            <li>Pastikan jumlah pembayaran sudah benar sebelum menyimpan</li>
-                        </ul>
+                        <!-- Info Pembayaran Sebelumnya -->
+                        <div class="mt-3 bg-white rounded border border-orange-200 p-3">
+                            <p class="text-xs text-gray-600 mb-1">Pembayaran Sebelumnya:</p>
+                            <p class="text-sm font-bold text-gray-800">
+                                Rp {{ number_format($transaksi->jml_bayar_input, 0, ',', '.') }}
+                            </p>
+                        </div>
                     </div>
+                </div>
 
-                    <!-- Tombol Aksi -->
-                    <div class="flex gap-2">
-                        <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2 rounded">
-                            <i class="bi bi-save"></i> Simpan Perubahan
+                <!-- Catatan Penting -->
+                <div class="mb-4 bg-yellow-50 border-l-4 border-yellow-500 p-3 rounded">
+                    <div class="flex items-start gap-2">
+                        <i class="fas fa-exclamation-triangle text-yellow-600 mt-0.5"></i>
+                        <div class="flex-1 text-xs text-yellow-800">
+                            <p class="font-semibold mb-2">Perhatian:</p>
+                            <ul class="list-disc list-inside space-y-1">
+                                <li>Perubahan jumlah pembayaran akan mempengaruhi sisa tagihan pelanggan</li>
+                                <li>Jika pembayaran melebihi sisa tagihan, kelebihan akan masuk ke deposit pelanggan</li>
+                                <li>Pastikan jumlah yang diinput sudah benar sebelum menyimpan</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="border-t border-gray-200 pt-4">
+                    <div class="flex flex-wrap gap-2">
+                        <button type="submit"
+                                class="bg-orange-600 hover:bg-orange-700 text-white px-4 py-2 rounded text-sm transition flex items-center gap-2">
+                            <i class="fas fa-save"></i>
+                            <span>Simpan Perubahan</span>
                         </button>
                         <a href="{{ route('tagihan.show', $transaksi->tagihan->id_tagihan) }}"
-                           class="bg-gray-300 hover:bg-gray-400 text-gray-800 px-5 py-2 rounded">
-                            <i class="bi bi-x-circle"></i> Batal
+                           class="bg-gray-300 hover:bg-gray-400 text-gray-800 px-4 py-2 rounded text-sm transition flex items-center gap-2">
+                            <i class="fas fa-times"></i>
+                            <span>Batal</span>
+                        </a>
+                        <a href="{{ route('tagihan.index') }}"
+                           class="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded text-sm transition flex items-center gap-2">
+                            <i class="fas fa-arrow-left"></i>
+                            <span>Kembali ke Daftar</span>
                         </a>
                     </div>
-                </form>
-            </div>
+                </div>
+            </form>
         </div>
-    </div>
-
-    <!-- Sidebar -->
-    <div class="lg:col-span-1">
-        <!-- Riwayat Pembayaran -->
-        <div class="bg-white rounded-lg shadow mb-6">
-            <div class="bg-cyan-600 text-white px-6 py-4 rounded-t-lg">
-                <h2 class="text-lg font-bold">Riwayat Pembayaran</h2>
-            </div>
-            <div class="p-4">
-                @php
-                    $riwayat = \App\Models\TransaksiPembayaran::where('id_tagihan', $transaksi->tagihan->id_tagihan)
-                                ->orderBy('tgl_bayar', 'desc')
-                                ->get();
-                @endphp
-
-                @if($riwayat->count() > 0)
-                    <div class="space-y-2">
-                        @foreach($riwayat as $item)
-                            <div class="border border-gray-200 rounded p-3 {{ $item->id_transaksi == $transaksi->id_transaksi ? 'bg-yellow-50 border-yellow-300' : '' }}">
-                                <div class="flex justify-between items-center">
-                                    <div>
-                                        <small class="text-gray-500 block">{{ \Carbon\Carbon::parse($item->tgl_bayar)->format('d/m/Y H:i') }}</small>
-                                        <strong class="text-blue-600">Rp {{ number_format($item->jml_bayar_input, 0, ',', '.') }}</strong>
-                                    </div>
-                                    @if($item->id_transaksi == $transaksi->id_transaksi)
-                                        <span class="bg-yellow-400 text-yellow-900 text-xs px-2 py-1 rounded">Sedang Diedit</span>
-                                    @endif
-                                </div>
-                            </div>
-                        @endforeach
-                    </div>
-                @else
-                    <p class="text-gray-500 text-center text-sm mb-0">Belum ada riwayat pembayaran</p>
-                @endif
-            </div>
-        </div>
-
-        <!-- Saldo Deposit -->
-        @if($transaksi->tagihan->pelanggan->deposit)
-        <div class="bg-white rounded-lg shadow">
-            <div class="bg-green-600 text-white px-6 py-4 rounded-t-lg">
-                <h2 class="text-lg font-bold">Saldo Deposit</h2>
-            </div>
-            <div class="p-6 text-center">
-                <h3 class="text-3xl font-bold text-green-600 mb-1">
-                    Rp {{ number_format($transaksi->tagihan->pelanggan->deposit->saldo_deposit, 0, ',', '.') }}
-                </h3>
-                <small class="text-gray-500">Saldo tersedia</small>
-            </div>
-        </div>
-        @endif
     </div>
 </div>
+
+<!-- Confirmation Script -->
+<script>
+document.querySelector('form').addEventListener('submit', function(e) {
+    const originalAmount = {{ $transaksi->jml_bayar_input }};
+    const newAmount = parseInt(document.querySelector('input[name="jml_bayar_input"]').value);
+
+    if (originalAmount !== newAmount) {
+        const message = 'Anda akan mengubah jumlah pembayaran:\n\n' +
+                       'Dari: Rp ' + originalAmount.toLocaleString('id-ID') + '\n' +
+                       'Menjadi: Rp ' + newAmount.toLocaleString('id-ID') + '\n\n' +
+                       'Lanjutkan?';
+
+        if (!confirm(message)) {
+            e.preventDefault();
+        }
+    }
+});
+</script>
 @endsection
