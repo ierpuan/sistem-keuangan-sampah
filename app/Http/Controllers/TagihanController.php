@@ -160,15 +160,15 @@ class TagihanController extends Controller
             ->with('success', 'Tagihan berhasil diperbarui.');
     }
 
-    public function destroy(Tagihan $tagihan)
-    {
-        if ($tagihan->transaksiPembayaran()->count() > 0) {
-            return back()->withErrors(['error' => 'Tagihan tidak bisa dihapus karena sudah ada pembayaran.']);
-        }
+    // public function destroy(Tagihan $tagihan)
+    // {
+    //     if ($tagihan->transaksiPembayaran()->count() > 0) {
+    //         return back()->withErrors(['error' => 'Tagihan tidak bisa dihapus karena sudah ada pembayaran.']);
+    //     }
 
-        $tagihan->delete();
+    //     $tagihan->delete();
 
-        return redirect()->route('tagihan.index')
-                        ->with('success', 'Tagihan berhasil dihapus.');
-    }
+    //     return redirect()->route('tagihan.index')
+    //                     ->with('success', 'Tagihan berhasil dihapus.');
+    // }
 }
