@@ -17,13 +17,50 @@ class PengeluaranController extends Controller
             $query->kategori($request->kategori);
         }
 
-        // Filter berdasarkan tanggal
+        // Filter berdasarkan periode
+        if ($request->filled('periode')) {
+            switch ($request->periode) {
+                case 'hari_ini':
+                    $query->whereDate('tanggal_pengeluaran', today());
+                    break;
+
+                case 'minggu_ini':
+                    $query->whereBetween('tanggal_pengeluaran', [
+                        now()->startOfWeek(),
+                        now()->endOfWeek()
+                    ]);
+                    break;
+
+                case 'bulan_ini':
+                    $query->whereMonth('tanggal_pengeluaran', now()->month)
+                          ->whereYear('tanggal_pengeluaran', now()->year);
+                    break;
+
+                case 'bulan_lalu':
+                    $query->whereMonth('tanggal_pengeluaran', now()->subMonth()->month)
+                          ->whereYear('tanggal_pengeluaran', now()->subMonth()->year);
+                    break;
+
+                case '3_bulan':
+                    $query->where('tanggal_pengeluaran', '>=', now()->subMonths(3));
+                    break;
+
+                case 'tahun_ini':
+                    $query->whereYear('tanggal_pengeluaran', now()->year);
+                    break;
+            }
+        }
+
+        // Filter berdasarkan tanggal (fallback jika masih ada)
         if ($request->filled('tanggal_dari') && $request->filled('tanggal_sampai')) {
             $query->tanggalBetween($request->tanggal_dari, $request->tanggal_sampai);
         }
 
         $pengeluaran = $query->orderBy('tanggal_pengeluaran', 'desc')->paginate(15);
+
+        // Total pengeluaran sesuai filter yang aktif
         $totalPengeluaran = $query->sum('jumlah');
+
         $kategoriList = Pengeluaran::distinct()->pluck('kategori');
 
         return view('pengeluaran.index', compact('pengeluaran', 'totalPengeluaran', 'kategoriList'));
@@ -51,12 +88,12 @@ class PengeluaranController extends Controller
         return redirect()->route('pengeluaran.index')
             ->with('success', 'Pengeluaran berhasil ditambahkan!');
     }
+
     public function show(Pengeluaran $pengeluaran)
     {
         return view('pengeluaran.show', compact('pengeluaran'));
-        $query->orderBy('tanggal_pengeluaran', 'desc')->paginate(15);
-
     }
+
     public function edit(Pengeluaran $pengeluaran)
     {
         return view('pengeluaran.edit', compact('pengeluaran'));
