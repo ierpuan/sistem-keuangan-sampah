@@ -244,7 +244,7 @@
                                         <i class="fas fa-edit text-sm"></i>
                                     </a>
                                 @endif
-                                @if ($t->transaksiPembayaran->count() === 0)
+                                {{-- @if ($t->transaksiPembayaran->count() === 0)
                                     <form method="POST" action="{{ route('tagihan.destroy', $t->id_tagihan) }}"
                                           onsubmit="return confirm('Yakin ingin menghapus tagihan ini?');">
                                         @csrf
@@ -255,8 +255,7 @@
                                             <i class="fas fa-trash-alt text-sm"></i>
                                         </button>
                                     </form>
-
-                                @endif
+                                @endif --}}
                             </div>
                         </td>
                     </tr>
