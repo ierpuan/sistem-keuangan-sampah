@@ -8,6 +8,8 @@
         height: 600px;
         width: 100%;
         border-radius: 0.5rem;
+        position: relative;
+        z-index: 1;
     }
 
     .leaflet-popup-content {
@@ -22,128 +24,283 @@
     .marker-cluster-small div {
         background-color: rgba(59, 130, 246, 0.8);
     }
+
+    /* Fix z-index untuk leaflet container */
+    .leaflet-container {
+        z-index: 1;
+    }
+
+    /* Pastikan pane leaflet tidak terlalu tinggi */
+    .leaflet-pane {
+        z-index: auto;
+    }
+
+    /* Fix untuk leaflet controls */
+    .leaflet-control-container {
+        position: relative;
+        z-index: 10;
+    }
+
+    /* Fix untuk popup */
+    .leaflet-popup {
+        z-index: 1000;
+    }
 </style>
 @endpush
 
 @section('content')
-<div class="mb-6">
-    <h1 class="text-3xl font-bold text-gray-800">
-        <i class="fas fa-map-marked-alt mr-2 text-blue-600"></i>Lokasi Pelanggan
-    </h1>
-    <p class="text-gray-600">Peta lokasi rumah pelanggan air bersih</p>
+<div class="mb-4">
+    <h1 class="text-2xl font-bold text-gray-800">Lokasi Pelanggan</h1>
+    <nav class="flex text-xs text-gray-600 mt-2" aria-label="breadcrumb">
+        <a href="{{ route('dashboard') }}" class="hover:text-gray-800">Dashboard</a>
+        <span class="mx-2">/</span>
+        <span class="text-gray-800 font-medium">Lokasi</span>
+    </nav>
 </div>
 
 <!-- Filter Section -->
-<div class="bg-white rounded-lg shadow p-6 mb-6">
-    <form method="GET" action="{{ route('lokasi.index') }}" id="filterForm" class="grid grid-cols-1 md:grid-cols-5 gap-4 items-end">
-        <!-- Dusun -->
-        <div>
-            <label class="block text-sm font-medium text-gray-700 mb-2">
-                <i class="fas fa-home mr-1 text-gray-500"></i>Dusun
-            </label>
-            <select name="dusun" id="filterDusun" class="w-full border rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none">
-                <option value="">Semua Dusun</option>
-                @foreach($dusun_list as $d)
-                    <option value="{{ $d }}" {{ request('dusun') === $d ? 'selected' : '' }}>{{ $d }}</option>
-                @endforeach
-            </select>
-        </div>
+<div class="bg-white rounded-lg shadow mb-4">
+    <!-- Toggle Filter Button (Mobile) -->
+    <button type="button"
+            onclick="document.getElementById('filterForm').classList.toggle('hidden')"
+            class="lg:hidden w-full px-4 py-3 flex justify-between items-center text-left border-b border-gray-200">
+        <span class="font-medium text-gray-700 text-sm">
+            <i class="fas fa-filter mr-2"></i>Filter Lokasi
+        </span>
+        <i class="fas fa-chevron-down text-gray-400"></i>
+    </button>
 
-        <!-- RT -->
-        <div>
-            <label class="block text-sm font-medium text-gray-700 mb-2">
-                <i class="fas fa-map-pin mr-1 text-gray-500"></i>RT
-            </label>
-            <select name="rt" id="filterRt" class="w-full border rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none">
-                <option value="">Semua RT</option>
-                @foreach($rt_list as $r)
-                    <option value="{{ $r }}" {{ request('rt') === $r ? 'selected' : '' }}>{{ $r }}</option>
-                @endforeach
-            </select>
-        </div>
+    <!-- Filter Form -->
+    <div id="filterForm" class="hidden lg:block p-4">
+        <form method="GET" action="{{ route('lokasi.index') }}">
+            <!-- Filter dalam 1 baris -->
+            <div class="grid grid-cols-1 md:grid-cols-6 gap-3 items-end">
+                <!-- Pencarian Nama/Alamat dengan Dropdown -->
+                <div class="md:col-span-2">
+                    <label class="block text-xs font-semibold text-gray-600 mb-1">
+                        <i class="fas fa-search mr-1"></i>Cari
+                    </label>
+                    <div class="relative">
+                        <input type="text"
+                               name="search"
+                               id="searchInput"
+                               autocomplete="off"
+                               {{-- value="{{ request('search') }}" --}}
+                               class="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-0 focus:border-gray-300"
+                               placeholder="Cari nama atau alamat...">
+                    </div>
+                </div>
 
-        <!-- RW -->
-        <div>
-            <label class="block text-sm font-medium text-gray-700 mb-2">
-                <i class="fas fa-map-marker-alt mr-1 text-gray-500"></i>RW
-            </label>
-            <select name="rw" id="filterRw" class="w-full border rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none">
-                <option value="">Semua RW</option>
-                @foreach($rw_list as $rw)
-                    <option value="{{ $rw }}" {{ request('rw') === $rw ? 'selected' : '' }}>{{ $rw }}</option>
-                @endforeach
-            </select>
-        </div>
+                <!-- RT -->
+                <div>
+                    <label class="block text-xs font-semibold text-gray-600 mb-1">
+                        <i class="fas fa-home mr-1"></i>RT
+                    </label>
+                    <div class="relative">
+                        <button type="button"
+                            onclick="document.getElementById('rtDropdown').classList.toggle('hidden')"
+                            class="w-full bg-white border border-gray-300 rounded px-3 py-1.5 text-sm
+                                   flex justify-between items-center hover:bg-gray-50">
+                            <span>{{ request('rt') ? 'RT ' . request('rt') : 'Semua' }}</span>
+                            <i class="fas fa-chevron-down text-xs text-gray-400"></i>
+                        </button>
 
-        <!-- Buttons -->
-        <div class="flex gap-2">
-            <button type="submit" class="flex-1 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center justify-center">
-                <i class="fas fa-filter mr-2"></i>Filter
-            </button>
-            <a href="{{ route('lokasi.index') }}" class="flex-1 bg-gray-300 hover:bg-gray-400 text-gray-800 px-4 py-2 rounded-lg flex items-center justify-center">
-                <i class="fas fa-redo mr-2"></i>Reset
-            </a>
-        </div>
+                        <div id="rtDropdown"
+                             class="hidden absolute z-50 mt-1 w-full bg-white border border-gray-200 rounded shadow-md max-h-48 overflow-auto">
+                            <a href="{{ route('lokasi.index', request()->except('rt')) }}"
+                               class="block px-3 py-2 text-sm hover:bg-gray-100">
+                                Semua
+                            </a>
 
-        <!-- Info Count -->
-        <div class="bg-blue-50 border border-blue-200 rounded-lg px-4 py-2">
-            <p class="text-sm text-blue-800">
-                <i class="fas fa-users mr-1"></i>
-                <strong>{{ $pelanggan->count() }}</strong> Pelanggan
-            </p>
-        </div>
-    </form>
+                            @foreach($rt_list as $r)
+                                <a href="{{ route('lokasi.index', array_merge(request()->all(), ['rt' => $r])) }}"
+                                   class="block px-3 py-2 text-sm hover:bg-gray-100">
+                                    RT {{ $r }}
+                                </a>
+                            @endforeach
+                        </div>
+                    </div>
+                </div>
+
+                <!-- RW -->
+                <div>
+                    <label class="block text-xs font-semibold text-gray-600 mb-1">
+                        <i class="fas fa-map-pin mr-1"></i>RW
+                    </label>
+                    <div class="relative">
+                        <button type="button"
+                            onclick="document.getElementById('rwDropdown').classList.toggle('hidden')"
+                            class="w-full bg-white border border-gray-300 rounded px-3 py-1.5 text-sm
+                                   flex justify-between items-center hover:bg-gray-50">
+                            <span>{{ request('rw') ? 'RW ' . request('rw') : 'Semua' }}</span>
+                            <i class="fas fa-chevron-down text-xs text-gray-400"></i>
+                        </button>
+
+                        <div id="rwDropdown"
+                             class="hidden absolute z-50 mt-1 w-full bg-white border border-gray-200 rounded shadow-md max-h-48 overflow-auto">
+                            <a href="{{ route('lokasi.index', request()->except('rw')) }}"
+                               class="block px-3 py-2 text-sm hover:bg-gray-100">
+                                Semua
+                            </a>
+
+                            @foreach($rw_list as $rw)
+                                <a href="{{ route('lokasi.index', array_merge(request()->all(), ['rw' => $rw])) }}"
+                                   class="block px-3 py-2 text-sm hover:bg-gray-100">
+                                    RW {{ $rw }}
+                                </a>
+                            @endforeach
+                        </div>
+                    </div>
+                </div>
+
+                <!-- RW -->
+                <div>
+                    <label class="block text-xs font-semibold text-gray-600 mb-1">
+                        <i class="fas fa-map-marker-alt mr-1"></i>RW
+                    </label>
+                    <div class="relative">
+                        <button type="button"
+                            onclick="document.getElementById('dusunDropdown').classList.toggle('hidden')"
+                            class="w-full bg-white border border-gray-300 rounded px-3 py-1.5 text-sm
+                                   flex justify-between items-center hover:bg-gray-50">
+                            <span>{{ request('dusun') ?? 'Semua' }}</span>
+                            <i class="fas fa-chevron-down text-xs text-gray-400"></i>
+                        </button>
+
+                        <div id="dusunDropdown"
+                             class="hidden absolute z-50 mt-1 w-full bg-white border border-gray-200 rounded shadow-md max-h-48 overflow-auto">
+                            <a href="{{ route('lokasi.index', request()->except('dusun')) }}"
+                               class="block px-3 py-2 text-sm hover:bg-gray-100">
+                                Semua
+                            </a>
+
+                            @foreach($dusun_list as $dusun)
+                                <a href="{{ route('lokasi.index', array_merge(request()->all(), ['dusun' => $dusun])) }}"
+                                   class="block px-3 py-2 text-sm hover:bg-gray-100">
+                                    {{ $dusun }}
+                                </a>
+                            @endforeach
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Buttons -->
+                <div class="flex gap-2">
+                    <button type="submit"
+                            class="flex-1 bg-gray-700 hover:bg-gray-800 text-white px-4 py-2 rounded text-sm transition duration-200 flex items-center justify-center">
+                        <i class="fas fa-filter mr-1"></i>Filter
+                    </button>
+                    <a href="{{ route('lokasi.index') }}"
+                       class="bg-gray-300 hover:bg-gray-400 text-gray-800 px-3 py-2 rounded text-sm transition duration-200 flex items-center justify-center"
+                       title="Reset Filter">
+                        <i class="fas fa-redo"></i>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Info Row -->
+            <div class="mt-3 flex flex-wrap items-center gap-3">
+                <!-- Count Info -->
+                <div class="bg-blue-50 border border-blue-200 rounded px-3 py-2">
+                    <p class="text-xs text-blue-700">
+                        <i class="fas fa-users mr-1"></i>
+                        <strong>{{ $pelanggan->count() }}</strong> Pelanggan ditemukan
+                    </p>
+                </div>
+
+                <!-- Info Filter Aktif -->
+                @if(request('search') || request('dusun') || request('rt') || request('rw'))
+                <div class="flex-1">
+                    <div class="bg-gray-50 border border-gray-200 rounded px-3 py-2">
+                        <div class="flex flex-wrap items-center gap-2">
+                            <span class="text-xs text-gray-600">
+                                <i class="fas fa-filter mr-1"></i>Filter aktif:
+                            </span>
+                            @if(request('search'))
+                                <span class="inline-flex items-center bg-blue-100 text-blue-800 px-2 py-1 rounded text-xs">
+                                    <i class="fas fa-search mr-1"></i>{{ request('search') }}
+                                    <a href="{{ route('lokasi.index', array_diff_key(request()->query(), ['search' => ''])) }}"
+                                       class="ml-2 text-blue-600 hover:text-blue-800">
+                                        <i class="fas fa-times"></i>
+                                    </a>
+                                </span>
+                            @endif
+                            @if(request('dusun'))
+                                <span class="inline-flex items-center bg-green-100 text-green-800 px-2 py-1 rounded text-xs">
+                                    Dusun: {{ request('dusun') }}
+                                    <a href="{{ route('lokasi.index', array_diff_key(request()->query(), ['dusun' => ''])) }}"
+                                       class="ml-2 text-green-600 hover:text-green-800">
+                                        <i class="fas fa-times"></i>
+                                    </a>
+                                </span>
+                            @endif
+                            @if(request('rt'))
+                                <span class="inline-flex items-center bg-purple-100 text-purple-800 px-2 py-1 rounded text-xs">
+                                    RT: {{ request('rt') }}
+                                    <a href="{{ route('lokasi.index', array_diff_key(request()->query(), ['rt' => ''])) }}"
+                                       class="ml-2 text-purple-600 hover:text-purple-800">
+                                        <i class="fas fa-times"></i>
+                                    </a>
+                                </span>
+                            @endif
+                            @if(request('rw'))
+                                <span class="inline-flex items-center bg-yellow-100 text-yellow-800 px-2 py-1 rounded text-xs">
+                                    RW: {{ request('rw') }}
+                                    <a href="{{ route('lokasi.index', array_diff_key(request()->query(), ['rw' => ''])) }}"
+                                       class="ml-2 text-yellow-600 hover:text-yellow-800">
+                                        <i class="fas fa-times"></i>
+                                    </a>
+                                </span>
+                            @endif
+                        </div>
+                    </div>
+                </div>
+                @endif
+            </div>
+        </form>
+    </div>
 </div>
 
+
 <!-- Map Section -->
-<div class="bg-white rounded-lg shadow p-6">
-    <div class="mb-4 flex justify-between items-center">
-        <h2 class="text-xl font-bold text-gray-800">
-            <i class="fas fa-map mr-2 text-green-600"></i>Peta Lokasi
-        </h2>
-        {{-- <h3 class="text-sm text-blue-600">
-            <i class="fas fa-map-marker-alt mr-1"> lokasi pelanggan aktif</i>
-            <i class="fas fa-info-circle mr-1"></i>Klik marker untuk melihat detail pelanggan
-        </h3> --}}
-        <div class="flex gap-2">
-            <button onclick="map.setView([-7.123, 112.345], 13)" class="bg-gray-200 hover:bg-gray-300 text-gray-700 px-4 py-2 rounded-lg text-sm">
-                <i class="fas fa-crosshairs mr-1"></i>Reset View
-            </button>
-            <button onclick="toggleFullscreen()" class="bg-gray-200 hover:bg-gray-300 text-gray-700 px-4 py-2 rounded-lg text-sm">
-                <i class="fas fa-expand mr-1"></i>Fullscreen
-            </button>
+<div class="bg-white rounded-lg shadow">
+    <!-- Header -->
+    <div class="bg-gradient-to-r from-gray-700 to-gray-800 text-white px-4 py-4 rounded-t-lg">
+        <div class="flex flex-col sm:flex-row items-start justify-between gap-3">
+            <div class="flex-1">
+                <h2 class="text-xl font-bold mb-1">Peta Lokasi</h2>
+                <p class="text-xs text-gray-200">
+                    <i class="fas fa-info-circle mr-1"></i>Klik marker untuk melihat rute dan detail pelanggan
+                </p>
+            </div>
+            <div class="flex gap-2 w-full sm:w-auto">
+                <button onclick="map.setView([centerLat, centerLng], 13)"
+                        class="flex-1 sm:flex-initial bg-white/20 hover:bg-white/30 text-white px-3 py-2 rounded text-xs transition">
+                    <i class="fas fa-crosshairs mr-1"></i>Reset View
+                </button>
+                <button onclick="toggleFullscreen()"
+                        class="flex-1 sm:flex-initial bg-white/20 hover:bg-white/30 text-white px-3 py-2 rounded text-xs transition">
+                    <i class="fas fa-expand mr-1"></i>Fullscreen
+                </button>
+            </div>
         </div>
     </div>
 
-    <div id="map"></div>
+    <!-- Map Content -->
+    <div class="p-4">
+        <div id="map"></div>
 
-    @if($pelanggan->count() === 0)
-        <div class="mt-4 bg-yellow-50 border border-yellow-200 rounded-lg p-4 text-center">
-            <i class="fas fa-exclamation-triangle text-yellow-600 text-2xl mb-2"></i>
-            <p class="text-yellow-800">Tidak ada pelanggan dengan koordinat lokasi yang valid.</p>
-            <p class="text-sm text-yellow-600 mt-2">Silakan tambahkan koordinat latitude & longitude pada data pelanggan.</p>
-        </div>
-    @endif
-</div>
-
-<!-- Legend -->
-<div class="bg-white rounded-lg shadow p-6 mt-6">
-    <h3 class="text-lg font-bold text-gray-800 mb-4">
-        <i class="fas fa-info-circle mr-2 text-blue-600"></i>Keterangan
-    </h3>
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <div class="flex items-center">
-            <div class="w-6 h-6 bg-blue-500 rounded-full mr-3"></div>
-            <span class="text-sm text-gray-700">Lokasi Pelanggan Aktif</span>
-        </div>
-        {{-- <div class="flex items-center">
-            <div class="w-6 h-6 bg-red-500 rounded-full mr-3"></div>
-            <span class="text-sm text-gray-700">Lokasi Pelanggan Nonaktif</span>
-        </div> --}}
-        <div class="flex items-center">
-            <i class="fas fa-mouse-pointer text-gray-500 mr-3 text-xl"></i>
-            <span class="text-sm text-gray-700">Klik marker untuk detail</span>
-        </div>
+        @if($pelanggan->count() === 0)
+            <div class="mt-4 bg-yellow-50 border-l-4 border-yellow-500 text-yellow-700 p-4 rounded">
+                <div class="flex items-start gap-3">
+                    <i class="fas fa-exclamation-triangle mt-0.5"></i>
+                    <div>
+                        <p class="font-medium text-sm">Tidak ada pelanggan dengan koordinat lokasi yang valid.</p>
+                        <p class="text-xs mt-1">Silakan tambahkan koordinat latitude & longitude pada data pelanggan.</p>
+                    </div>
+                </div>
+            </div>
+        @endif
     </div>
 </div>
 @endsection
@@ -273,7 +430,7 @@
     document.querySelectorAll('#filterDusun, #filterRt, #filterRw').forEach(function(select) {
         select.addEventListener('change', function() {
             // Uncomment baris berikut jika ingin auto-submit
-            // document.getElementById('filterForm').submit();
+            // document.querySelector('#filterForm form').submit();
         });
     });
 
