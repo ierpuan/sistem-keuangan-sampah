@@ -14,21 +14,6 @@
     </nav>
 </div>
 
-<!-- Alert Messages -->
-{{-- @if(session('success'))
-    <div class="bg-green-50 border-l-4 border-green-500 text-green-700 p-4 rounded mb-4 flex items-start gap-3">
-        <i class="fas fa-check-circle mt-0.5"></i>
-        <span class="text-sm">{{ session('success') }}</span>
-    </div>
-@endif
-
-@if(session('error'))
-    <div class="bg-red-50 border-l-4 border-red-500 text-red-700 p-4 rounded mb-4 flex items-start gap-3">
-        <i class="fas fa-exclamation-circle mt-0.5"></i>
-        <span class="text-sm">{{ session('error') }}</span>
-    </div>
-@endif --}}
-
 <div class="bg-white rounded-lg shadow">
     <!-- Header -->
     <div class="bg-gradient-to-r from-gray-700 to-gray-800 text-white px-4 py-4 rounded-t-lg">
@@ -156,6 +141,7 @@
                                 <th class="px-4 py-3 text-left text-xs font-bold text-gray-600 uppercase">No</th>
                                 <th class="px-4 py-3 text-left text-xs font-bold text-gray-600 uppercase">Tanggal</th>
                                 <th class="px-4 py-3 text-left text-xs font-bold text-gray-600 uppercase">Jumlah</th>
+                                <th class="px-4 py-3 text-left text-xs font-bold text-gray-600 uppercase">Dari Deposit</th>
                                 <th class="px-4 py-3 text-left text-xs font-bold text-gray-600 uppercase">Petugas</th>
                                 <th class="px-4 py-3 text-center text-xs font-bold text-gray-600 uppercase">Aksi</th>
                             </tr>
@@ -170,6 +156,16 @@
                                     </td>
                                     <td class="px-4 py-3 text-sm font-bold text-green-600">
                                         Rp {{ number_format($transaksi->jml_bayar_input, 0, ',', '.') }}
+                                    </td>
+                                    <td class="px-4 py-3 text-sm">
+                                        @if($transaksi->jml_bayar_dari_deposit > 0)
+                                            <span class="inline-flex items-center px-2 py-1 text-xs bg-green-100 text-green-800 rounded-full">
+                                                <i class="fas fa-wallet mr-1"></i>
+                                                Rp {{ number_format($transaksi->jml_bayar_dari_deposit, 0, ',', '.') }}
+                                            </span>
+                                        @else
+                                            <span class="text-gray-400 text-xs">-</span>
+                                        @endif
                                     </td>
                                     <td class="px-4 py-3 text-sm text-gray-700">
                                         <i class="fas fa-user text-gray-400 mr-1"></i>
@@ -206,7 +202,7 @@
                                 <td class="px-4 py-3 font-bold text-green-600 text-sm">
                                     Rp {{ number_format($tagihan->total_sudah_bayar, 0, ',', '.') }}
                                 </td>
-                                <td colspan="2"></td>
+                                <td colspan="3"></td>
                             </tr>
                         </tfoot>
                     </table>
@@ -290,7 +286,7 @@
 <!-- JavaScript untuk Konfirmasi Hapus -->
 <script>
 function confirmDelete(id) {
-    if (confirm('Apakah Anda yakin ingin menghapus transaksi pembayaran ini?\n\nPerhatian: Sisa tagihan akan bertambah setelah pembayaran dihapus.')) {
+    if (confirm('Apakah Anda yakin ingin menghapus transaksi pembayaran ini?\n\nPerhatian:\n- Sisa tagihan akan bertambah setelah pembayaran dihapus\n- Jika pembayaran menggunakan deposit, saldo deposit akan dikembalikan')) {
         document.getElementById('delete-form-' + id).submit();
     }
 }
