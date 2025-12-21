@@ -6,6 +6,7 @@ use App\Models\Pengguna;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rule;
+use Illuminate\Support\Facades\Auth;
 
 class PenggunaController extends Controller
 {
@@ -133,9 +134,12 @@ class PenggunaController extends Controller
     public function destroy(Pengguna $pengguna)
     {
         // Cek apakah pengguna sedang login
-        if ($pengguna->id_pengguna === auth()->id) {
-            return back()->withErrors(['error' => 'Tidak dapat menghapus akun yang sedang login!']);
+        if ($pengguna->id_pengguna === Auth::id()) {
+            return back()->withErrors([
+                'error' => 'Tidak dapat menghapus akun yang sedang login!'
+            ]);
         }
+
 
         // Cek apakah pengguna memiliki transaksi atau pengeluaran
         if ($pengguna->transaksiPembayaran()->count() > 0 || $pengguna->pengeluaran()->count() > 0) {
