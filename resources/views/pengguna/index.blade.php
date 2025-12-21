@@ -141,7 +141,7 @@
                             {{ $p->created_at->format('d/m/Y') }}
                         </td>
                         <td class="px-3 py-3 text-center text-sm">
-                            <div class="flex justify-center gap-2">
+                            <div class="flex justify-center gap-4">
                                 <a href="{{ route('pengguna.show', $p->id_pengguna) }}"
                                    class="text-gray-600 hover:text-gray-800">
                                     <i class="fas fa-eye"></i>
