@@ -328,7 +328,7 @@ class LaporanController extends Controller
         ]
     ]);
     $sheet->getStyle("A{$row}")->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
-    $sheet->getStyle("E{$row}:F{$row}")->getAlignment()->setHorizontal(Alignment::HORIZONTAL_RIGHT);
+    $sheet->getStyle("D{$row}:F{$row}")->getAlignment()->setHorizontal(Alignment::HORIZONTAL_RIGHT);
     $row++;
 
     // Saldo Bulan Lalu
@@ -348,7 +348,7 @@ class LaporanController extends Controller
         ]
     ]);
     $sheet->getStyle("A{$row}")->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
-    $sheet->getStyle("E{$row}:F{$row}")->getAlignment()->setHorizontal(Alignment::HORIZONTAL_RIGHT);
+    $sheet->getStyle("D{$row}:F{$row}")->getAlignment()->setHorizontal(Alignment::HORIZONTAL_RIGHT);
     $row++;
 
     // Transaksi gabungan
@@ -446,10 +446,14 @@ class LaporanController extends Controller
     $sheet->getStyle('A15')->getFont()->setSize(12);
     $sheet->getStyle('A15')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_RIGHT);
 
-    $sheet->setCellValue('A17', 'Mengetahui,');
-    $sheet->mergeCells('A17:F17');
+    $sheet->setCellValue('A17', 'Pemerintah Desa Sambopinggir');
+    $sheet->mergeCells('A17:C17');
+    $sheet->setCellValue('D17', 'Penanggung Jawab Pengelolaan Sampah');
+    $sheet->mergeCells('D17:F17');
     $sheet->getStyle('A17')->getFont()->setSize(12);
+    $sheet->getStyle('D17')->getFont()->setSize(12);
     $sheet->getStyle('A17')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+    $sheet->getStyle('D17')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
 
     $sheet->setCellValue('A21', '____________________');
     $sheet->mergeCells('A21:C21');
@@ -458,12 +462,12 @@ class LaporanController extends Controller
     $sheet->getStyle('A21')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
     $sheet->getStyle('D21')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
 
-    $sheet->setCellValue('A22', 'Ketua');
+    $sheet->setCellValue('A22', 'Aminah');
     $sheet->mergeCells('A22:C22');
-    $sheet->setCellValue('D22', 'Bendahara');
+    $sheet->setCellValue('D22', 'Ahmad Syaifuddin');
     $sheet->mergeCells('D22:F22');
-    $sheet->getStyle('A22')->getFont()->setBold(true)->setSize(12);
-    $sheet->getStyle('D22')->getFont()->setBold(true)->setSize(12);
+    $sheet->getStyle('A22')->getFont()->setSize(12);
+    $sheet->getStyle('D22')->getFont()->setSize(12);
     $sheet->getStyle('A22')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
     $sheet->getStyle('D22')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
 
