@@ -184,7 +184,7 @@
                             <i class="fas fa-map-marker-alt text-gray-400 mr-1"></i>{{ $p->dusun ?? '-' }}
                         </td>
                         <td class="px-3 py-3 whitespace-nowrap">
-                            <span class="px-2 py-1 text-xs font-medium rounded-full {{ $p->status_aktif === 'Aktif' ? 'bg-gray-600 text-white' : 'bg-gray-200 text-gray-800' }}">
+                            <span class="px-2 py-1 text-xs font-medium rounded-full {{ $p->status_aktif === 'Aktif' ? 'bg-blue-100 text-blue-800' : 'bg-red-100 text-red-800' }}">
                                 {{ $p->status_aktif }}
                             </span>
                         </td>
