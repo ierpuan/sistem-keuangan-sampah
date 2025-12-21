@@ -100,16 +100,11 @@
                             Jumlah Pembayaran Baru <span class="text-red-500">*</span>
                         </label>
                         <input type="number"
-                               name="jml_bayar_input"
-                               value="{{ old('jml_bayar_input', $transaksi->jml_bayar_input) }}"
-                               min="0"
-                               required
-                               class="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-gray-500"
-                               placeholder="Masukkan jumlah pembayaran">
-                        <p class="text-xs text-gray-500 mt-1">Input nominal tanpa tanda titik (.) atau koma (,)</p>
-                        @error('jml_bayar_input')
-                            <p class="text-xs text-red-600 mt-1">{{ $message }}</p>
-                        @enderror
+                            name="jml_bayar_input"
+                            value="{{ old('jml_bayar_input', $transaksi->jml_bayar_input) }}"
+                            min="0"
+                            class="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-gray-500"
+                            placeholder="Masukkan jumlah pembayaran (opsional)">
                     </div>
 
                     <!-- Info Deposit -->
@@ -171,20 +166,24 @@
 
 <!-- Confirmation Script -->
 <script>
-document.querySelector('form').addEventListener('submit', function(e) {
-    const originalAmount = {{ $transaksi->jml_bayar_input }};
-    const newAmount = parseInt(document.querySelector('input[name="jml_bayar_input"]').value);
+    const checkboxDeposit = document.querySelector('input[name="gunakan_deposit"]');
+    const inputBayar = document.querySelector('input[name="jml_bayar_input"]');
 
-    if (originalAmount !== newAmount) {
-        const message = 'Anda akan mengubah jumlah pembayaran:\n\n' +
-                       'Dari: Rp ' + originalAmount.toLocaleString('id-ID') + '\n' +
-                       'Menjadi: Rp ' + newAmount.toLocaleString('id-ID') + '\n\n' +
-                       'Lanjutkan?';
-
-        if (!confirm(message)) {
-            e.preventDefault();
+    if (checkboxDeposit) {
+        function toggleInput() {
+            if (checkboxDeposit.checked) {
+                inputBayar.value = '';
+                inputBayar.disabled = true;
+                inputBayar.classList.add('bg-gray-100');
+            } else {
+                inputBayar.disabled = false;
+                inputBayar.classList.remove('bg-gray-100');
+            }
         }
+
+        checkboxDeposit.addEventListener('change', toggleInput);
+        toggleInput(); // jalankan saat halaman pertama kali load
     }
-});
-</script>
+    </script>
+
 @endsection
