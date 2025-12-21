@@ -16,9 +16,9 @@
 
 <div class="bg-white rounded-lg shadow">
     <!-- Header -->
-    <div class="bg-gradient-to-r from-gray-700 to-gray-800 text-white px-4 py-4 rounded-t-lg">
-        <h2 class="text-xl font-bold">Form Pembayaran</h2>
-        <p class="text-xs text-gray-200 mt-1">Catat pembayaran pelanggan</p>
+    <div class="bg-gradient-to-r from-gray-700 to-gray-800 text-white px-4 py-3 rounded-t-lg">
+        <h2 class="text-lg font-bold">Form Pembayaran</h2>
+        <p class="text-xs text-gray-300 mt-1">Catat pembayaran pelanggan</p>
     </div>
 
     <!-- Content -->
@@ -32,20 +32,20 @@
                 <div class="space-y-3">
                     <!-- Info Pelanggan -->
                     <div>
-                        <label class="block text-xs font-semibold text-gray-600 mb-1">Pelanggan</label>
+                        <label class="block text-xs font-medium text-gray-700 mb-1">Pelanggan</label>
                         <p class="text-sm text-gray-800 font-medium">{{ $tagihan->pelanggan->nama }}</p>
                     </div>
 
                     <!-- Periode -->
                     <div>
-                        <label class="block text-xs font-semibold text-gray-600 mb-1">Periode Tagihan</label>
+                        <label class="block text-xs font-medium text-gray-700 mb-1">Periode Tagihan</label>
                         <p class="text-sm text-gray-800">{{ $tagihan->periode }}</p>
                     </div>
 
                     <!-- Total Tagihan -->
                     <div>
-                        <label class="block text-xs font-semibold text-gray-600 mb-1">Total Kewajiban Bayar</label>
-                        <p class="text-lg text-gray-800 font-bold">Rp {{ number_format($tagihan->sisa_tagihan, 0, ',', '.') }}</p>
+                        <label class="block text-xs font-medium text-gray-700 mb-1">Total Kewajiban Bayar</label>
+                        <p class="text-base text-gray-800 font-bold">Rp {{ number_format($tagihan->sisa_tagihan, 0, ',', '.') }}</p>
                     </div>
                 </div>
 
@@ -53,13 +53,13 @@
                 <div class="space-y-3">
                     <!-- Input Pembayaran -->
                     <div>
-                        <label class="block text-xs font-semibold text-gray-600 mb-1">
+                        <label class="block text-xs font-medium text-gray-700 mb-1">
                             Jumlah Pembayaran <span class="text-red-500">*</span>
                         </label>
                         <input type="number"
                                name="jml_bayar_input"
                                id="jml_bayar_input"
-                               class="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gray-500"
+                               class="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-gray-500"
                                placeholder="contoh: 10000"
                                value="{{ old('jml_bayar_input') }}"
                                min="0">
@@ -72,10 +72,11 @@
                     <!-- Info Deposit -->
                     @if($tagihan->pelanggan->deposit)
                     <div class="bg-green-50 border border-green-200 rounded p-3">
-                        <label class="block text-xs font-semibold text-green-700 mb-1">Saldo Deposit</label>
+                        <label class="block text-xs font-medium text-green-700 mb-1">Saldo Deposit</label>
                         <p class="text-sm text-green-800 font-bold mb-2">
                             Rp {{ number_format($tagihan->pelanggan->deposit->saldo_deposit, 0, ',', '.') }}
                         </p>
+                        @if($tagihan->pelanggan->deposit->saldo_deposit > 0)
                         <label class="flex items-center text-xs text-gray-700">
                             <input type="checkbox"
                                    name="gunakan_deposit"
@@ -84,6 +85,9 @@
                                    {{ old('gunakan_deposit') ? 'checked' : '' }}>
                             <span class="font-medium">Gunakan saldo untuk membayar</span>
                         </label>
+                        @else
+                        <p class="text-xs text-gray-500 italic">Saldo deposit tidak tersedia</p>
+                        @endif
                     </div>
                     @endif
                 </div>
@@ -92,13 +96,13 @@
             <!-- Divider -->
             <div class="border-t border-gray-200 pt-4">
                 <!-- Tombol Aksi -->
-                <div class="flex gap-2">
+                <div class="flex flex-col sm:flex-row gap-2">
                     <a href="{{ route('tagihan.show', $tagihan->id_tagihan) }}"
                        class="text-center bg-gray-300 hover:bg-gray-400 text-gray-800 px-4 py-2 rounded transition text-sm">
                         <i class="fas fa-arrow-left mr-1"></i>Batal
                     </a>
                     <button type="submit"
-                            class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded transition text-sm">
+                            class="text-center bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded transition text-sm">
                         <i class="fas fa-check mr-1"></i>Bayar
                     </button>
                 </div>
@@ -106,5 +110,4 @@
         </form>
     </div>
 </div>
-
 @endsection
