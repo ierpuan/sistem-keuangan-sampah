@@ -128,7 +128,7 @@ class PembayaranController extends Controller
     public function update(Request $request, $id)
     {
         $request->validate([
-            'jml_bayar_input' => 'required|numeric|min:1',
+            'jml_bayar_input' => 'nullable|numeric|min:1',
             'gunakan_deposit' => 'nullable|in:1',
         ]);
 
