@@ -20,12 +20,11 @@ class TransaksiPembayaran extends Model
         'id_pengguna',
         'tgl_bayar',
         'jml_bayar_input',
-        'deposit_digunakan', // Tambahkan ini
+        'jml_bayar_dari_deposit', // TAMBAHKAN INI
     ];
 
     protected $casts = [
         'jml_bayar_input' => 'decimal:2',
-        'deposit_digunakan' => 'decimal:2', // Tambahkan ini
         'tgl_bayar' => 'datetime',
     ];
 
