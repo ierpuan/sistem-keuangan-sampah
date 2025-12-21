@@ -147,5 +147,27 @@
 
     </form>
 </div>
+<script>
+    function setRole(role) {
+        // set text yang tampil
+        document.getElementById('roleText').innerText = role;
+
+        // set value ke input hidden
+        document.getElementById('roleValue').value = role;
+
+        // tutup dropdown
+        document.getElementById('roleDropdown').classList.add('hidden');
+    }
+
+    // tutup dropdown jika klik di luar
+    document.addEventListener('click', function (e) {
+        const dropdown = document.getElementById('roleDropdown');
+        const button = dropdown.previousElementSibling;
+
+        if (!button.contains(e.target) && !dropdown.contains(e.target)) {
+            dropdown.classList.add('hidden');
+        }
+    });
+</script>
 
 @endsection
