@@ -4,8 +4,8 @@
 
 @section('content')
 <div class="mb-6">
-    <h1 class="text-3xl font-bold text-gray-800">Tambah Pengguna Baru</h1>
-    <p class="text-gray-600">Buat akun pengguna baru</p>
+    <h1 class="text-2xl font-bold text-gray-800">Tambah Pengguna Baru</h1>
+    <p class="text-sm text-gray-600">Buat akun pengguna baru</p>
 </div>
 
 <div class="bg-white rounded-lg shadow p-6">
@@ -76,35 +76,40 @@
                     Role <span class="text-red-500">*</span>
                 </label>
 
-                <div class="relative">
-                    <select name="role"
-                        class="w-full border border-gray-300 rounded-lg px-4 py-2 pr-10 text-sm
-                               appearance-none bg-white
-                               focus:outline-none focus:ring-0
-                               hover:bg-gray-50
-                               @error('role') border-red-500 @enderror"
-                        required>
-                        <option value="">Pilih Role</option>
-                        <option value="Admin" {{ old('role') === 'Admin' ? 'selected' : '' }}>
-                            Admin
-                        </option>
-                        <option value="Petugas" {{ old('role') === 'Petugas' ? 'selected' : '' }}>
-                            Petugas
-                        </option>
-                    </select>
+                <input type="hidden" name="role" id="roleValue"
+                       value="{{ old('role', $pengguna->role ?? '') }}">
 
-                    <!-- icon dropdown -->
-                    <div class="pointer-events-none absolute inset-y-0 right-3 flex items-center">
+                <div class="relative">
+                    <button type="button"
+                        onclick="document.getElementById('roleDropdown').classList.toggle('hidden')"
+                        class="w-full bg-white border rounded-lg px-4 py-2 text-sm
+                               flex justify-between items-center hover:bg-gray-50
+                               @error('role') border-red-500 @enderror">
+
+                        <span id="roleText">
+                            {{ old('role', $pengguna->role ?? '') }}
+                        </span>
+
                         <i class="fas fa-chevron-down text-xs text-gray-400"></i>
+                    </button>
+
+                    <div id="roleDropdown"
+                        class="hidden absolute z-50 mt-1 w-full bg-white border rounded-lg shadow-md">
+
+                        <div onclick="setRole('Admin')"
+                            class="px-4 py-2 text-sm hover:bg-gray-100 cursor-pointer">
+                            Admin
+                        </div>
+
+                        <div onclick="setRole('Petugas')"
+                            class="px-4 py-2 text-sm hover:bg-gray-100 cursor-pointer">
+                            Petugas
+                        </div>
                     </div>
                 </div>
 
-                @error('role')
-                    <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
-                @enderror
-            </div>
-
         </div>
+
 
         <!-- Info Role -->
         <div class="mt-6 bg-blue-50 border border-blue-200 rounded-lg p-4">
@@ -121,7 +126,7 @@
         <!-- Tombol -->
         <div class="mt-6 flex gap-4">
             <button type="submit"
-                class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg">
+                class="bg-gray-600 hover:bg-gray-700 text-white px-6 py-2 rounded-lg">
                 <i class="fas fa-save mr-2"></i>Simpan
             </button>
 
@@ -133,4 +138,26 @@
 
     </form>
 </div>
+<script>
+    function setRole(role) {
+        // set text yang tampil
+        document.getElementById('roleText').innerText = role;
+
+        // set value ke input hidden
+        document.getElementById('roleValue').value = role;
+
+        // tutup dropdown
+        document.getElementById('roleDropdown').classList.add('hidden');
+    }
+
+    // tutup dropdown jika klik di luar
+    document.addEventListener('click', function (e) {
+        const dropdown = document.getElementById('roleDropdown');
+        const button = dropdown.previousElementSibling;
+
+        if (!button.contains(e.target) && !dropdown.contains(e.target)) {
+            dropdown.classList.add('hidden');
+        }
+    });
+</script>
 @endsection
