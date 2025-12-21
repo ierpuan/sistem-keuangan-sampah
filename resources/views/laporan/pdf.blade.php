@@ -199,33 +199,32 @@
     </tbody>
 </table>
 
-<div style="margin-top: 40px; width: 100%;">
+<div style="margin-top:40px; width:100%;">
 
     <!-- Tanggal kanan atas -->
-    <div style="text-align: right; margin-bottom: 20px;">
+    <div style="text-align:right; margin-bottom:20px;">
         {{ \Carbon\Carbon::now()->translatedFormat('d F Y') }}
     </div>
 
-    <!-- Mengetahui di tengah -->
-    <div style="text-align: center; margin-bottom: 60px;">
-        <p>Mengetahui,</p>
-    </div>
-
     <!-- Tanda tangan -->
-    <table style="width: 100%; border: none;">
+    <table style="width:100%; border:none; margin-top:5px;">
         <tr>
-            <td style="width: 50%; border: none; text-align: center;">
-                <p>____________________</p>
-                <p>Bendahara</p>
+            <td style="width:50%; border:none; text-align:center; padding-top:20px;">
+                <p style="margin-bottom:60px;">Pemerintah Desa Sambopinggir</p>
+                <p style="margin:0;">____________________</p>
+                <p style="margin-top:8px;">Aminah</p>
             </td>
-            <td style="width: 50%; border: none; text-align: center;">
-                <p>____________________</p>
-                <p>Ketua</p>
+
+            <td style="width:50%; border:none; text-align:center; padding-top:20px;">
+                <p style="margin-bottom:60px;">Penanggung Jawab Pengelolaan Sampah</p>
+                <p style="margin:0;">____________________</p>
+                <p style="margin-top:8px;">Ahmad Syaifuddin</p>
             </td>
         </tr>
     </table>
 
 </div>
+
 
 
 </body>
