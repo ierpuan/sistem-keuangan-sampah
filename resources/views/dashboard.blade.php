@@ -125,9 +125,10 @@
                 </svg>
                 Transaksi Terbaru
             </h2>
-            <p class="text-gray-300 text-xs mt-1">5 transaksi terakhir</p>
+            <p class="text-gray-300 text-xs mt-1">Transaksi Terbaru</p>
+            {{-- 5 transaksi terakhir --}}
         </div>
-        <div class="p-4">
+        <div class="p-4 max-h-96 overflow-y-auto">
             @if($transaksi_terbaru->count() > 0)
                 <div class="space-y-3">
                     @foreach($transaksi_terbaru as $transaksi)
@@ -143,7 +144,9 @@
                                     <p class="text-xs text-gray-600 mt-0.5">
                                         {{ $transaksi->tgl_bayar->format('d/m/Y H:i') }}
                                     </p>
-                                    <p class="text-xs text-gray-500 mt-0.5">{{ $transaksi->tagihan->periode }} • {{ $transaksi->pengguna->nama }}</p>
+                                    <p class="text-xs text-gray-500 mt-0.5">
+                                        {{ \Carbon\Carbon::parse($transaksi->tagihan->periode . '-01')->translatedFormat('F Y') }} • {{ $transaksi->pengguna->nama }}
+                                    </p>
                                 </div>
                             </div>
                             <div class="text-right">
@@ -176,32 +179,37 @@
                 <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
                     <path fill-rule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clip-rule="evenodd"/>
                 </svg>
-                Tagihan Jatuh Tempo
+                Tagihan Jatuh Tempo (Belum Bayar)
             </h2>
             <p class="text-gray-300 text-xs mt-1">7 hari ke depan</p>
         </div>
-        <div class="p-4">
-            @if($tagihan_jatuh_tempo->count() > 0)
+        <div class="p-4 max-h-96 overflow-y-auto">
+            @php
+                $tagihan_belum_bayar = $tagihan_jatuh_tempo->where('status', '!=', 'Lunas');
+            @endphp
+
+            @if($tagihan_belum_bayar->count() > 0)
                 <div class="space-y-3">
-                    @foreach($tagihan_jatuh_tempo as $tagihan)
-                        <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors duration-200 border-l-4 border-gray-600">
+                    @foreach($tagihan_belum_bayar as $tagihan)
+                        <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors duration-200">
                             <div class="flex items-start gap-2">
-                                <div class="bg-gray-200 p-1.5 rounded-lg">
-                                    <svg class="w-4 h-4 text-gray-700" fill="currentColor" viewBox="0 0 20 20">
+                                <div class="bg-yellow-200 p-1.5 rounded-lg">
+                                    <svg class="w-4 h-4 text-yellow-700" fill="currentColor" viewBox="0 0 20 20">
                                         <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
                                     </svg>
                                 </div>
                                 <div>
                                     <p class="text-sm font-semibold text-gray-800">{{ $tagihan->pelanggan->nama }}</p>
-                                    <p class="text-xs text-gray-600 mt-0.5">Periode: {{ $tagihan->periode }}</p>
+                                    <p class="text-xs text-gray-600 mt-0.5">Periode: {{ \Carbon\Carbon::parse($tagihan->periode . '-01')->translatedFormat('F Y') }}</p>
                                     <p class="text-xs text-gray-600 font-medium mt-0.5">
                                         {{ $tagihan->jatuh_tempo->isPast() ? 'Lewat' : 'Jatuh tempo' }}: {{ $tagihan->jatuh_tempo->format('d/m/Y') }}
                                     </p>
                                 </div>
                             </div>
                             <div class="text-right">
-                                <p class="text-sm font-bold text-gray-800 mb-1">Rp {{ number_format($tagihan->sisa_tagihan, 0, ',', '.') }}</p>
-                                <span class="text-xs px-2 py-1 rounded-full font-medium bg-gray-200 text-gray-700">
+                                <p class="text-sm font-bold text-green-600 mb-1">Rp {{ number_format($tagihan->sisa_tagihan, 0, ',', '.') }}</p>
+                                <span class="text-xs px-2 py-1 rounded-full font-medium
+                                    {{ $tagihan->jatuh_tempo->isPast() ? 'bg-red-100 text-red-600' : 'bg-yellow-100 text-yellow-600' }}">
                                     {{ $tagihan->status }}
                                 </span>
                             </div>
@@ -213,7 +221,7 @@
                     <svg class="w-12 h-12 text-gray-300 mx-auto mb-2" fill="currentColor" viewBox="0 0 20 20">
                         <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
                     </svg>
-                    <p class="text-sm text-gray-500 font-medium">Tidak ada tagihan jatuh tempo</p>
+                    <p class="text-sm text-gray-500 font-medium">Tidak ada tagihan yang belum dibayar</p>
                     <p class="text-xs text-gray-400 mt-1">Semua tagihan dalam kondisi baik</p>
                 </div>
             @endif

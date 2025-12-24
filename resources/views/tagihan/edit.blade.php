@@ -35,7 +35,7 @@
             <div class="flex items-start gap-2">
                 <i class="fas fa-info-circle text-blue-600 mt-0.5"></i>
                 <div class="text-xs text-blue-800">
-                    <strong class="font-semibold">Perhatian:</strong> Anda hanya dapat mengedit jumlah tagihan dan tanggal jatuh tempo untuk tagihan yang belum memiliki riwayat pembayaran.
+                    <strong class="font-semibold">Perhatian:</strong> Anda hanya dapat mengedit jumlah tagihan untuk tagihan yang belum memiliki riwayat pembayaran.
                 </div>
             </div>
         </div>
@@ -50,7 +50,7 @@
                     <i class="fas fa-user text-gray-500 mr-2"></i>
                     Informasi Pelanggan
                 </h3>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
                     <div>
                         <label class="block text-xs font-semibold text-gray-600 mb-1">Nama Pelanggan</label>
                         <input type="text"
@@ -61,7 +61,14 @@
                     <div>
                         <label class="block text-xs font-semibold text-gray-600 mb-1">Periode Tagihan</label>
                         <input type="text"
-                               value="{{ $tagihan->periode }}"
+                               value="{{ \Carbon\Carbon::parse($tagihan->periode . '-01')->translatedFormat('F Y') }}"
+                               class="w-full border border-gray-300 rounded px-3 py-2 bg-white text-sm text-gray-700 cursor-not-allowed"
+                               readonly>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-600 mb-1">Tanggal Jatuh Tempo</label>
+                        <input type="text"
+                               value="{{ $tagihan->jatuh_tempo->format('d/m/Y') }}"
                                class="w-full border border-gray-300 rounded px-3 py-2 bg-white text-sm text-gray-700 cursor-not-allowed"
                                readonly>
                     </div>
@@ -69,7 +76,7 @@
             </div>
 
             <!-- Form Edit -->
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+            <div class="mb-4">
                 <!-- Jumlah Tagihan -->
                 <div>
                     <label class="block text-xs font-semibold text-gray-700 mb-1">
@@ -79,48 +86,17 @@
                         <span class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 text-sm">Rp</span>
                         <input type="number"
                                name="jml_tagihan_pokok"
-                               value="{{ old('jml_tagihan_pokok', $tagihan->jml_tagihan_pokok) }}"
+                               value="{{ old('jml_tagihan_pokok', number_format($tagihan->jml_tagihan_pokok, 0, '', '')) }}"
                                class="w-full border rounded px-3 py-2 pl-10 text-sm @error('jml_tagihan_pokok') border-red-500 @else border-gray-300 @enderror focus:ring-0 focus:border-gray-300"
                                min="0"
-                               step="1000"
-                               placeholder="Masukkan jumlah tagihan"
+                               step="1"
+                               placeholder="contoh: 50000"
                                required>
                     </div>
+                    <p class="text-xs text-gray-500 mt-1">Input nominal tanpa tanda titik (.)</p>
                     @error('jml_tagihan_pokok')
-                        <p class="text-red-600 text-xs mt-1 flex items-center gap-1">
-                            <i class="fas fa-exclamation-circle"></i>
-                            {{ $message }}
-                        </p>
+                        <p class="text-xs text-red-600 mt-1">{{ $message }}</p>
                     @enderror
-                    <p class="text-xs text-gray-500 mt-1">
-                        <i class="fas fa-lightbulb text-yellow-500 mr-1"></i>
-                        masukkan jumlah tagihan pokok dalam rupiah
-                    </p>
-                </div>
-
-                <!-- Jatuh Tempo -->
-                <div>
-                    <label class="block text-xs font-semibold text-gray-700 mb-1">
-                        Tanggal Jatuh Tempo <span class="text-red-500">*</span>
-                    </label>
-                    <div class="relative">
-                        <input type="date"
-                               name="jatuh_tempo"
-                               value="{{ old('jatuh_tempo', $tagihan->jatuh_tempo->format('Y-m-d')) }}"
-                               class="w-full border rounded px-3 py-2 text-sm @error('jatuh_tempo') border-red-500 @else border-gray-300 @enderror focus:ring-0 focus:border-gray-300"
-                               required>
-                        <i class="fas fa-calendar-alt absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none"></i>
-                    </div>
-                    @error('jatuh_tempo')
-                        <p class="text-red-600 text-xs mt-1 flex items-center gap-1">
-                            <i class="fas fa-exclamation-circle"></i>
-                            {{ $message }}
-                        </p>
-                    @enderror
-                    <p class="text-xs text-gray-500 mt-1">
-                        <i class="fas fa-info-circle mr-1"></i>
-                        Pilih tanggal jatuh tempo pembayaran
-                    </p>
                 </div>
             </div>
 
@@ -132,7 +108,7 @@
                         <i class="fas fa-save"></i>
                         <span>Simpan Perubahan</span>
                     </button>
-                    <a href="{{ route('tagihan.index', $tagihan->id_tagihan) }}"
+                    <a href="{{ route('tagihan.index') }}"
                        class="bg-gray-300 hover:bg-gray-400 text-gray-800 px-4 py-2 rounded text-sm transition flex items-center gap-2">
                         <i class="fas fa-times"></i>
                         <span>Batal</span>

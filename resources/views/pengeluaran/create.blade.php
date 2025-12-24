@@ -29,24 +29,27 @@
                 <input type="date"
                        name="tanggal_pengeluaran"
                        value="{{ old('tanggal_pengeluaran', date('Y-m-d')) }}"
-                       class="w-full border border-gray-300 rounded-lg px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gray-500 focus:border-transparent @error('tanggal_pengeluaran') border-red-500 @enderror"
+                       class="w-full border border-gray-300 rounded-lg px-4 py-2 text-sm focus:outline-none focus:ring-0 focus:border-gray-500 @error('tanggal_pengeluaran') border-red-500 @enderror"
                        required>
                 @error('tanggal_pengeluaran')
                     <p class="text-red-500 text-xs mt-1">
                         <i class="fas fa-exclamation-circle mr-1"></i>{{ $message }}
                     </p>
                 @enderror
+                <p class="text-xs text-gray-500 mt-1">
+                    <i class="fas fa-info-circle mr-1"></i>Format: bulan/hari/tahun
+                </p>
             </div>
 
             <!-- Kategori -->
             <div>
                 <label class="block text-sm font-medium text-gray-700 mb-2">
-                    Kategori <span class="text-red-500">*</span>
+                    Jenis Pengeluaran <span class="text-red-500">*</span>
                 </label>
                 <input type="text"
                        name="kategori"
                        value="{{ old('kategori') }}"
-                       class="w-full border border-gray-300 rounded-lg px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gray-500 focus:border-transparent @error('kategori') border-red-500 @enderror"
+                       class="w-full border border-gray-300 rounded-lg px-4 py-2 text-sm focus:outline-none focus:ring-0 focus:border-gray-500 @error('kategori') border-red-500 @enderror"
                        placeholder="Contoh: Listrik, Maintenance, Gaji"
                        required>
                 @error('kategori')
@@ -66,10 +69,10 @@
                     <input type="number"
                            name="jumlah"
                            value="{{ old('jumlah') }}"
-                           class="w-full border border-gray-300 rounded-lg pl-12 pr-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gray-500 focus:border-transparent @error('jumlah') border-red-500 @enderror"
+                           class="w-full border border-gray-300 rounded-lg pl-12 pr-4 py-2 text-sm focus:outline-none focus:ring-0 focus:border-gray-500 @error('jumlah') border-red-500 @enderror"
                            min="0"
-                           step="1000"
-                           placeholder="0"
+                           step="1"
+                           placeholder="10000"
                            required>
                 </div>
                 @error('jumlah')
@@ -78,7 +81,7 @@
                     </p>
                 @enderror
                 <p class="text-xs text-gray-500 mt-1">
-                    <i class="fas fa-info-circle mr-1"></i>Masukkan jumlah tanpa tanda titik (.) atau koma (,)
+                    <i class="fas fa-info-circle mr-1"></i>Masukkan jumlah tanpa tanda titik (.)
                 </p>
             </div>
 
@@ -89,7 +92,7 @@
                 </label>
                 <textarea name="keterangan"
                           rows="3"
-                          class="w-full border border-gray-300 rounded-lg px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gray-500 focus:border-transparent @error('keterangan') border-red-500 @enderror"
+                          class="w-full border border-gray-300 rounded-lg px-4 py-2 text-sm focus:outline-none focus:ring-0 focus:border-gray-500 @error('keterangan') border-red-500 @enderror"
                           placeholder="Detail pengeluaran (opsional)...">{{ old('keterangan') }}</textarea>
                 @error('keterangan')
                     <p class="text-red-500 text-xs mt-1">

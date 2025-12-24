@@ -14,52 +14,37 @@ class PengeluaranController extends Controller
 
         // Filter berdasarkan kategori
         if ($request->filled('kategori')) {
-            $query->kategori($request->kategori);
+            $query->where('kategori', $request->kategori);
         }
 
-        // Filter berdasarkan periode
-        if ($request->filled('periode')) {
-            switch ($request->periode) {
-                case 'hari_ini':
-                    $query->whereDate('tanggal_pengeluaran', today());
-                    break;
-
-                case 'minggu_ini':
-                    $query->whereBetween('tanggal_pengeluaran', [
-                        now()->startOfWeek(),
-                        now()->endOfWeek()
-                    ]);
-                    break;
-
-                case 'bulan_ini':
-                    $query->whereMonth('tanggal_pengeluaran', now()->month)
-                          ->whereYear('tanggal_pengeluaran', now()->year);
-                    break;
-
-                case 'bulan_lalu':
-                    $query->whereMonth('tanggal_pengeluaran', now()->subMonth()->month)
-                          ->whereYear('tanggal_pengeluaran', now()->subMonth()->year);
-                    break;
-
-                case '3_bulan':
-                    $query->where('tanggal_pengeluaran', '>=', now()->subMonths(3));
-                    break;
-
-                case 'tahun_ini':
-                    $query->whereYear('tanggal_pengeluaran', now()->year);
-                    break;
-            }
+        // Filter berdasarkan tanggal - PERBAIKAN DI SINI
+        // Nama parameter harus sesuai dengan yang ada di view: dari_tanggal dan sampai_tanggal
+        if ($request->filled('dari_tanggal')) {
+            $query->whereDate('tanggal_pengeluaran', '>=', $request->dari_tanggal);
         }
 
-        // Filter berdasarkan tanggal (fallback jika masih ada)
-        if ($request->filled('tanggal_dari') && $request->filled('tanggal_sampai')) {
-            $query->tanggalBetween($request->tanggal_dari, $request->tanggal_sampai);
+        if ($request->filled('sampai_tanggal')) {
+            $query->whereDate('tanggal_pengeluaran', '<=', $request->sampai_tanggal);
         }
 
         $pengeluaran = $query->orderBy('tanggal_pengeluaran', 'desc')->paginate(15);
 
-        // Total pengeluaran sesuai filter yang aktif
-        $totalPengeluaran = $query->sum('jumlah');
+        // PENTING: Total harus dihitung dengan query terpisah karena pagination
+        $totalQuery = Pengeluaran::query();
+
+        if ($request->filled('kategori')) {
+            $totalQuery->where('kategori', $request->kategori);
+        }
+
+        if ($request->filled('dari_tanggal')) {
+            $totalQuery->whereDate('tanggal_pengeluaran', '>=', $request->dari_tanggal);
+        }
+
+        if ($request->filled('sampai_tanggal')) {
+            $totalQuery->whereDate('tanggal_pengeluaran', '<=', $request->sampai_tanggal);
+        }
+
+        $totalPengeluaran = $totalQuery->sum('jumlah');
 
         $kategoriList = Pengeluaran::distinct()->pluck('kategori');
 
@@ -75,7 +60,17 @@ class PengeluaranController extends Controller
     {
         $validated = $request->validate([
             'tanggal_pengeluaran' => 'required|date',
-            'jumlah' => 'required|numeric|min:0',
+            'jumlah' => [
+                'required',
+                'numeric',
+                'min:0',
+                function ($attribute, $value, $fail) {
+                    // Cek jika ada tanda titik atau koma
+                    if ($value !== null && (strpos((string)$value, '.') !== false || strpos((string)$value, ',') !== false)) {
+                        $fail('Jumlah pengeluaran tidak boleh menggunakan tanda titik atau koma. Masukkan angka bulat saja (misal: 10000).');
+                    }
+                }
+            ],
             'kategori' => 'required|max:50',
             'keterangan' => 'nullable',
         ]);
@@ -103,7 +98,17 @@ class PengeluaranController extends Controller
     {
         $validated = $request->validate([
             'tanggal_pengeluaran' => 'required|date',
-            'jumlah' => 'required|numeric|min:0',
+            'jumlah' => [
+                'required',
+                'numeric',
+                'min:0',
+                function ($attribute, $value, $fail) {
+                    // Cek jika ada tanda titik atau koma
+                    if ($value !== null && (strpos((string)$value, '.') !== false || strpos((string)$value, ',') !== false)) {
+                        $fail('Jumlah pengeluaran tidak boleh menggunakan tanda titik atau koma. Masukkan angka bulat saja (misal: 10000).');
+                    }
+                }
+            ],
             'kategori' => 'required|max:50',
             'keterangan' => 'nullable',
         ]);

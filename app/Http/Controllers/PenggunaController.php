@@ -110,17 +110,32 @@ class PenggunaController extends Controller
                 'max:50',
                 Rule::unique('pengguna', 'username')->ignore($pengguna->id_pengguna, 'id_pengguna')
             ],
+            'current_password' => 'required_with:password|string',
             'password' => 'nullable|string|min:6|confirmed',
             'role' => 'required|in:Admin,Petugas',
+        ], [
+            'current_password.required_with' => 'Password lama harus diisi jika ingin mengganti password.',
+            'password.min' => 'Password baru minimal 6 karakter.',
+            'password.confirmed' => 'Konfirmasi password baru tidak sesuai.',
         ]);
 
-        // Jika password diisi, hash password baru
+        // Jika password diisi, verifikasi password lama dan hash password baru
         if ($request->filled('password')) {
+            // Verifikasi password lama
+            if (!Hash::check($request->current_password, $pengguna->password)) {
+                return back()->withErrors([
+                    'current_password' => 'Password lama tidak sesuai.'
+                ])->withInput();
+            }
+
             $validated['password'] = Hash::make($validated['password']);
         } else {
             // Jika tidak, hapus dari array agar tidak diupdate
             unset($validated['password']);
         }
+
+        // Hapus current_password dari array update
+        unset($validated['current_password']);
 
         $pengguna->update($validated);
 
@@ -160,8 +175,18 @@ class PenggunaController extends Controller
     public function resetPassword(Request $request, Pengguna $pengguna)
     {
         $validated = $request->validate([
+            'current_password' => 'required|string',
             'new_password' => 'required|string|min:6|confirmed',
+        ], [
+            'current_password.required' => 'Password lama harus diisi.',
         ]);
+
+        // Verifikasi password lama
+        if (!Hash::check($request->current_password, $pengguna->password)) {
+            return back()->withErrors([
+                'current_password' => 'Password lama tidak sesuai.'
+            ])->withInput();
+        }
 
         $pengguna->update([
             'password' => Hash::make($validated['new_password'])

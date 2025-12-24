@@ -11,7 +11,7 @@
 </div>
     <div class="flex justify-end">
     <a href="{{ route('pengguna.create') }}"
-       class="bg-gray-700 hover:bg-gray-800 text-white px-4 py-2 rounded-lg text-sm transition whitespace-nowrap mb-3">
+       class="bg-gray-700 hover:bg-gray-800 text-white px-4 py-2 rounded text-sm transition whitespace-nowrap mb-3">
         <i class="fas fa-user-plus mr-1"></i>Tambah Pengguna
     </a>
     </div>
@@ -41,7 +41,7 @@
                            name="search"
                            value="{{ request('search') }}"
                            autocomplete="off"
-                           class="w-full border border-gray-300 rounded px-3 py-1.5 text-sm focus:outline-none"
+                           class="w-full border border-gray-300 rounded px-3 py-1.5 text-sm focus:outline-none focus:ring-0 focus:border-gray-500"
                            placeholder="Nama atau Username">
                 </div>
 

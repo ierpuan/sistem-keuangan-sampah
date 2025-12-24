@@ -94,7 +94,7 @@
 <div class="header">
     <h2>LAPORAN KEUANGAN</h2>
     <h3>Pengelolaan Sampah Desa Sambopinggir</h3>
-    <p>Periode: {{ \Carbon\Carbon::parse($bulan)->format('F Y') }}</p>
+    <p>Periode: {{ \Carbon\Carbon::parse($bulan)->translatedFormat('F Y') }}</p>
 </div>
 
 <!-- Summary Kumulatif -->

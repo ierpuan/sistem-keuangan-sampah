@@ -85,7 +85,7 @@
                                name="search"
                                id="searchInput"
                                autocomplete="off"
-                               {{-- value="{{ request('search') }}" --}}
+                               value="{{ request('search') }}"
                                class="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-0 focus:border-gray-300"
                                placeholder="Cari nama atau alamat...">
                     </div>
@@ -288,19 +288,18 @@
 
     <!-- Map Content -->
     <div class="p-4">
-        <div id="map"></div>
-
         @if($pelanggan->count() === 0)
-            <div class="mt-4 bg-yellow-50 border-l-4 border-yellow-500 text-yellow-700 p-4 rounded">
+            <div class="mb-4 bg-yellow-50 border-l-4 border-yellow-500 p-4 rounded">
                 <div class="flex items-start gap-3">
-                    <i class="fas fa-exclamation-triangle mt-0.5"></i>
-                    <div>
-                        <p class="font-medium text-sm">Tidak ada pelanggan dengan koordinat lokasi yang valid.</p>
-                        <p class="text-xs mt-1">Silakan tambahkan koordinat latitude & longitude pada data pelanggan.</p>
+                    <i class="fas fa-exclamation-triangle text-yellow-600 mt-0.5"></i>
+                    <div class="flex-1">
+                        <p class="font-medium text-sm text-yellow-800">Tidak ada pelanggan dengan koordinat lokasi yang valid</p>
+                        <p class="text-xs text-yellow-700 mt-1">Silakan tambahkan koordinat latitude & longitude pada data pelanggan atau sesuaikan filter pencarian.</p>
                     </div>
                 </div>
             </div>
         @endif
+        <div id="map"></div>
     </div>
 </div>
 @endsection
@@ -344,14 +343,14 @@
         shadowSize: [41, 41]
     });
 
-    const redIcon = L.icon({
-        iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-red.png',
-        shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
-        iconSize: [25, 41],
-        iconAnchor: [12, 41],
-        popupAnchor: [1, -34],
-        shadowSize: [41, 41]
-    });
+    // const redIcon = L.icon({
+    //     iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-red.png',
+    //     shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
+    //     iconSize: [25, 41],
+    //     iconAnchor: [12, 41],
+    //     popupAnchor: [1, -34],
+    //     shadowSize: [41, 41]
+    // });
 
     // Tambahkan Marker untuk setiap pelanggan
     const markers = [];

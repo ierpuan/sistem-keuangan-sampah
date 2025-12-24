@@ -9,7 +9,7 @@
 </div>
 <div class="flex justify-end">
         <a href="{{ route('pelanggan.create') }}"
-           class="bg-gray-700 hover:bg-gray-800 text-white px-4 py-2 rounded-lg transition text-sm whitespace-nowrap mb-3">
+           class="bg-gray-700 hover:bg-gray-800 text-white px-4 py-2 rounded transition text-sm whitespace-nowrap mb-3">
             <i class="fas fa-plus mr-1"></i>Tambah Pelanggan
         </a>
 </div>
@@ -203,7 +203,10 @@
                                 <form action="{{ route('pelanggan.destroy', $p->id_pelanggan) }}"
                                       method="POST"
                                       class="inline"
-                                      onsubmit="return confirm('Yakin ingin menghapus pelanggan ini?')">
+                                      onsubmit="return confirm(
+                                            'Yakin ingin menghapus pelanggan ini?\n\n' +
+                                            '⚠️ Pastikan pelanggan tidak memiliki tagihan yang belum lunas.'
+                                        )">
                                     @csrf
                                     @method('DELETE')
                                     <button type="submit"

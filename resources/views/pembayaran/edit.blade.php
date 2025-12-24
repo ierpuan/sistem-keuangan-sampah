@@ -26,7 +26,7 @@
     <!-- Body -->
     <div class="p-4">
         <!-- Error Messages -->
-        @if ($errors->any())
+        {{-- @if ($errors->any())
             <div class="mb-4 bg-red-50 border-l-4 border-red-500 p-3 rounded">
                 <div class="flex items-start gap-2">
                     <i class="fas fa-exclamation-circle text-red-600 mt-0.5"></i>
@@ -40,7 +40,7 @@
                     </div>
                 </div>
             </div>
-        @endif
+        @endif --}}
 
         <form action="{{ route('pembayaran.update', $transaksi->id_transaksi) }}" method="POST">
             @csrf
@@ -58,7 +58,7 @@
                     <!-- Periode -->
                     <div>
                         <label class="block text-xs font-medium text-gray-700 mb-1">Periode Tagihan</label>
-                        <p class="text-sm text-gray-800">{{ $transaksi->tagihan->periode }}</p>
+                        <p class="text-sm text-gray-800">{{ \Carbon\Carbon::parse($transaksi->tagihan->periode . '-01')->translatedFormat('F Y') }}</p>
                     </div>
 
                     <!-- ID Transaksi -->
@@ -101,10 +101,15 @@
                         </label>
                         <input type="number"
                             name="jml_bayar_input"
-                            value="{{ old('jml_bayar_input', $transaksi->jml_bayar_input) }}"
+                            value="{{ old('jml_bayar_input', number_format($transaksi->jml_bayar_input ?? 0, 0, '', '')) }}"
                             min="0"
-                            class="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-gray-500"
-                            placeholder="Masukkan jumlah pembayaran (opsional)">
+                            step="1"
+                            class="w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-0 focus:border-gray-500 @error('jml_bayar_input') border-red-500 @enderror"
+                            placeholder="Masukkan jumlah pembayaran">
+                        @error('jml_bayar_input')
+                            <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                        @enderror
+                        <p class="text-xs text-gray-500 mt-1">Masukkan jumlah dalam Rupiah (misal: 50000 untuk Rp 50.000)</p>
                     </div>
 
                     <!-- Info Deposit -->
@@ -149,7 +154,7 @@
             <!-- Divider -->
             <div class="border-t border-gray-200 pt-4">
                 <!-- Tombol Aksi -->
-                <div class="flex flex-col sm:flex-row gap-2">
+                <div class="flex sm:flex-row gap-2">
                     <button type="submit"
                             class="text-center bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded text-sm transition">
                         <i class="fas fa-save mr-1"></i>Simpan Perubahan
@@ -165,25 +170,25 @@
 </div>
 
 <!-- Confirmation Script -->
-<script>
-    const checkboxDeposit = document.querySelector('input[name="gunakan_deposit"]');
-    const inputBayar = document.querySelector('input[name="jml_bayar_input"]');
+{{-- <script>
+const checkboxDeposit = document.querySelector('input[name="gunakan_deposit"]');
+const inputBayar = document.querySelector('input[name="jml_bayar_input"]');
 
-    if (checkboxDeposit) {
-        function toggleInput() {
-            if (checkboxDeposit.checked) {
-                inputBayar.value = '';
-                inputBayar.disabled = true;
-                inputBayar.classList.add('bg-gray-100');
-            } else {
-                inputBayar.disabled = false;
-                inputBayar.classList.remove('bg-gray-100');
-            }
+if (checkboxDeposit) {
+    function toggleInput() {
+        if (checkboxDeposit.checked) {
+            inputBayar.value = '';
+            inputBayar.disabled = true;
+            inputBayar.classList.add('bg-gray-100');
+        } else {
+            inputBayar.disabled = false;
+            inputBayar.classList.remove('bg-gray-100');
         }
-
-        checkboxDeposit.addEventListener('change', toggleInput);
-        toggleInput(); // jalankan saat halaman pertama kali load
     }
-    </script>
+
+    checkboxDeposit.addEventListener('change', toggleInput);
+    toggleInput(); // jalankan saat halaman pertama kali load
+}
+</script> --}}
 
 @endsection

@@ -80,7 +80,7 @@
 
                 <div>
                     <label class="block text-xs font-semibold text-gray-600 mb-1">Terdaftar Sejak</label>
-                    <p class="text-sm text-gray-800">{{ $pelanggan->created_at->format('d F Y') }}</p>
+                    <p class="text-sm text-gray-800">{{ $pelanggan->created_at->translatedFormat('d F Y') }}</p>
                 </div>
 
                 <div>

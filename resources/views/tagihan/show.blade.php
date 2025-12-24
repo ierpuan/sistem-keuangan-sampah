@@ -23,7 +23,7 @@
                 <div class="flex flex-wrap items-center gap-3 text-xs text-gray-200">
                     <span>
                         <i class="fas fa-calendar mr-1"></i>
-                        Periode: {{ $tagihan->periode }}
+                        Periode: {{ \Carbon\Carbon::parse($tagihan->periode . '-01')->translatedFormat('F Y') }}
                     </span>
                     <span class="px-2 py-1 text-xs rounded-full {{ $tagihan->status === 'Lunas' ? 'bg-green-500 text-white' : ($tagihan->status === 'Tunggakan' ? 'bg-red-500 text-white' : 'bg-yellow-500 text-white') }}">
                         {{ $tagihan->status }}
@@ -72,6 +72,7 @@
                 @endif
             </div>
 
+
             <!-- Info Kanan -->
             <div class="space-y-3">
                 <div>
@@ -85,7 +86,7 @@
                     <label class="block text-xs font-semibold text-gray-600 mb-1">Jatuh Tempo</label>
                     <p class="text-sm text-gray-800">
                         <i class="fas fa-calendar-alt mr-1"></i>
-                        {{ $tagihan->jatuh_tempo->format('d F Y') }}
+                        {{ $tagihan->jatuh_tempo->translatedFormat('d F Y') }}
                     </p>
                     @if($tagihan->jatuh_tempo->isPast() && !$tagihan->is_lunas)
                         <p class="text-xs text-red-600 mt-1 font-medium">
@@ -96,12 +97,12 @@
 
                 <div>
                     <label class="block text-xs font-semibold text-gray-600 mb-1">Dibuat Pada</label>
-                    <p class="text-sm text-gray-800">{{ $tagihan->created_at->format('d F Y') }}</p>
+                    <p class="text-sm text-gray-800">{{ $tagihan->created_at->translatedFormat('d F Y') }}</p>
                 </div>
 
                 <div>
                     <label class="block text-xs font-semibold text-gray-600 mb-1">Terakhir Diupdate</label>
-                    <p class="text-sm text-gray-800">{{ $tagihan->updated_at->format('d/m/Y H:i') }}</p>
+                    <p class="text-sm text-gray-800">{{ $tagihan->updated_at->translatedFormat('d/m/Y H:i') }}</p>
                 </div>
             </div>
         </div>
@@ -239,7 +240,7 @@
                             @foreach($tagihan->pelanggan->tagihan as $riwayat)
                                 <tr class="{{ $riwayat->id_tagihan == $tagihan->id_tagihan ? 'bg-yellow-50' : 'hover:bg-gray-50' }} transition-colors">
                                     <td class="px-4 py-3 text-sm {{ $riwayat->id_tagihan == $tagihan->id_tagihan ? 'font-bold' : '' }}">
-                                        {{ $riwayat->periode }}
+                                        {{ \Carbon\Carbon::parse($riwayat->periode . '-01')->translatedFormat('F Y') }}
                                         @if($riwayat->id_tagihan == $tagihan->id_tagihan)
                                             <span class="ml-1 text-yellow-600"><i class="fas fa-arrow-left"></i></span>
                                         @endif

@@ -23,7 +23,7 @@
                 <div class="flex flex-wrap items-center gap-3 text-xs text-gray-200">
                     <span>
                         <i class="far fa-calendar mr-1"></i>
-                        {{ \Carbon\Carbon::parse($pengeluaran->tanggal)->format('d F Y') }}
+                        {{ \Carbon\Carbon::parse($pengeluaran->tanggal)->translatedFormat('d F Y') }}
                     </span>
                     <span>
                         <i class="far fa-user mr-1"></i>
@@ -56,7 +56,7 @@
 
                 <div>
                     <label class="block text-xs font-semibold text-gray-600 mb-1">
-                        Kategori
+                        Jenis Pengeluaran
                     </label>
                     @if($pengeluaran->kategori)
                         <span class="inline-block px-2 py-1 text-xs rounded-full bg-green-100 text-green-800">

@@ -127,7 +127,7 @@
             </tr>
             <tr>
                 <td>Periode</td>
-                <td>: {{ $t->periode }}</td>
+                <td>: {{ \Carbon\Carbon::parse($t->periode . '-01')->translatedFormat('F Y') }}</td>
             </tr>
             <tr>
                 <td>Keterangan</td>

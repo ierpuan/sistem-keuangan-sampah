@@ -25,10 +25,14 @@
                         class="flex-1 bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded transition text-sm">
                     <i class="fas fa-search mr-1"></i>Tampilkan
                 </button>
+                <a href="{{ url()->current() }}?bulan={{ date('Y-m') }}"
+                    class="flex-1 bg-gray-300 hover:bg-gray-400 text-gray-800 px-4 py-2 rounded transition text-sm text-center">
+                     <i class="fas fa-redo mr-1"></i>Reset
+                 </a>
             </div>
         </div>
 
-        <div class="flex flex-col sm:flex-row gap-2 pt-3 border-t border-gray-200">
+        <div class="flex sm:flex-row gap-2 pt-3 border-t border-gray-200">
             <a href="{{ route('laporan.export.pdf', ['bulan' => $bulan]) }}"
                class="text-center bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded transition text-sm">
                 <i class="fas fa-file-pdf mr-1"></i>Export PDF
@@ -76,7 +80,7 @@
         <div class="flex items-center justify-between">
             <div class="flex-1">
                 <p class="text-gray-700 text-xs font-medium mb-1">Saldo</p>
-                <p class="text-xl font-bold {{ $saldo >= 0 ? 'text-blue-600' : 'text-red-600' }}">
+                <p class="text-xl font-bold {{ $saldo >= 0 ? 'text-blue-700' : 'text-red-700' }}">
                     Rp {{ number_format($saldo, 0, ',', '.') }}
                 </p>
             </div>
@@ -162,7 +166,7 @@
                     <tr>
                         <th class="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase">No</th>
                         <th class="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase">Tanggal</th>
-                        <th class="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase">Kategori</th>
+                        <th class="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase">Jenis</th>
                         <th class="px-4 py-3 text-right text-xs font-semibold text-gray-600 uppercase">Jumlah</th>
                     </tr>
                 </thead>
@@ -172,11 +176,11 @@
                         <td class="px-4 py-3 text-sm text-gray-900">{{ $index + 1 }}</td>
                         <td class="px-4 py-3 text-sm text-gray-700">
                             <i class="fas fa-calendar text-gray-400 mr-1"></i>
-                            {{ $item->tanggal_pengeluaran->format('d/m/Y') }}
+                            {{ $item->tanggal_pengeluaran->translatedFormat('d/m/Y') }}
                         </td>
                         <td class="px-4 py-3 text-sm text-gray-700">{{ $item->kategori }}</td>
                         <td class="px-4 py-3 text-sm text-right font-bold text-red-600">
-                            Rp {{ number_format($item->jml_pengeluaran, 0, ',', '.') }}
+                            Rp {{ number_format($item->jumlah, 0, ',', '.') }}
                         </td>
                     </tr>
                     @empty

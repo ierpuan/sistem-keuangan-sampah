@@ -32,7 +32,7 @@
                 <a href="{{ route('tagihan.cetak.periode', ['periode' => $p]) }}"
                    target="_blank"
                    class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition">
-                    {{ $p }}
+                    {{ \Carbon\Carbon::parse($p . '-01')->translatedFormat('F Y') }}
                 </a>
             @endforeach
         </div>
@@ -70,7 +70,7 @@
                     type="text"
                     name="pelanggan"
                     autocomplete="off"
-                    {{-- value="{{ request('pelanggan') }}" --}}
+                    value="{{ request('pelanggan') }}"
                     placeholder="Nama pelanggan..."
                     class="w-full bg-white border border-gray-300 rounded px-3 py-1.5 text-sm focus:outline-none focus:ring-0 focus:ring-gray-300 focus:border-gray-300">
             </div>
@@ -83,7 +83,11 @@
                         class="w-full bg-white border border-gray-300 rounded px-3 py-1.5 text-sm
                                flex justify-between items-center hover:bg-gray-50 transition">
                         <span class="truncate">
-                            {{ request('periode') ?? 'Semua Periode' }}
+                            @if(request('periode'))
+                                {{ \Carbon\Carbon::parse(request('periode') . '-01')->translatedFormat('F Y') }}
+                            @else
+                                Semua Periode
+                            @endif
                         </span>
                         <i class="fas fa-chevron-down text-xs text-gray-400 ml-2"></i>
                     </button>
@@ -98,7 +102,7 @@
                         @foreach($periode_list as $p)
                             <a href="{{ route('tagihan.index', array_merge(request()->all(), ['periode' => $p])) }}"
                                class="block px-3 py-2 text-sm hover:bg-gray-100 transition {{ request('periode') == $p ? 'bg-gray-50 font-medium' : '' }}">
-                                {{ $p }}
+                                {{ \Carbon\Carbon::parse($p . '-01')->translatedFormat('F Y') }}
                             </a>
                         @endforeach
                     </div>
@@ -196,12 +200,12 @@
                                 </p>
                                 <p class="text-xs text-gray-600 lg:hidden">
                                     <span class="font-medium">Deposit:</span>
-                                    Rp {{ number_format($t->pelanggan->deposit->saldo_deposit, 0, ',', '.') }}
+                                    Rp {{ number_format($t->pelanggan->deposit->saldo_deposit ?? 0, 0, ',', '.') }}
                                 </p>
                             </div>
                         </td>
                         <td class="px-3 py-3 whitespace-nowrap text-sm text-gray-900">
-                            {{ $t->periode }}
+                            {{ \Carbon\Carbon::parse($t->periode . '-01')->translatedFormat('F Y') }}
                         </td>
                         <td class="px-3 py-3 whitespace-nowrap text-sm font-medium text-gray-900 hidden md:table-cell">
                             Rp {{ number_format($t->jml_tagihan_pokok, 0, ',', '.') }}
@@ -213,7 +217,7 @@
                             Rp {{ number_format($t->sisa_tagihan, 0, ',', '.') }}
                         </td>
                         <td class="px-3 py-3 whitespace-nowrap">
-                            <span class="px-2.5 py-1 text-xs font-medium rounded-full
+                            <span class="px-2.5 py-1 text-xs rounded-full
                                 {{ $t->status === 'Lunas' ? 'bg-green-100 text-green-800' : '' }}
                                 {{ $t->status === 'Tunggakan' ? 'bg-red-100 text-red-800' : '' }}
                                 {{ $t->status === 'Belum Bayar' ? 'bg-yellow-100 text-yellow-800' : '' }}">
@@ -221,7 +225,7 @@
                             </span>
                         </td>
                         <td class="px-3 py-3 whitespace-nowrap text-sm text-gray-900 hidden lg:table-cell">
-                            Rp {{ number_format($t->pelanggan->deposit->saldo_deposit, 0, ',', '.') }}
+                            Rp {{ number_format($t->pelanggan->deposit->saldo_deposit ?? 0, 0, ',', '.') }}
                         </td>
                         <td class="px-3 py-3 whitespace-nowrap text-center">
                             <div class="flex items-center justify-center gap-1.5">
@@ -244,18 +248,6 @@
                                         <i class="fas fa-edit text-sm"></i>
                                     </a>
                                 @endif
-                                {{-- @if ($t->transaksiPembayaran->count() === 0)
-                                    <form method="POST" action="{{ route('tagihan.destroy', $t->id_tagihan) }}"
-                                          onsubmit="return confirm('Yakin ingin menghapus tagihan ini?');">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button type="submit"
-                                                class="inline-flex items-center justify-center w-8 h-8 text-red-600 hover:text-red-700 hover:bg-red-50 rounded transition-colors"
-                                                title="Hapus">
-                                            <i class="fas fa-trash-alt text-sm"></i>
-                                        </button>
-                                    </form>
-                                @endif --}}
                             </div>
                         </td>
                     </tr>
@@ -283,7 +275,7 @@
 </div>
 
 <!-- Modal Generate Tagihan -->
-<div id="modalGenerate" class="hidden fixed inset-0 bg-black bg-opacity-50 overflow-y-auto h-full w-full z-50 flex items-center justify-center p-4">
+<div id="modalGenerate" class="{{ $errors->any() ? '' : 'hidden' }} fixed inset-0 bg-black bg-opacity-50 overflow-y-auto h-full w-full z-50 flex items-center justify-center p-4">
     <div class="relative bg-white rounded-lg shadow-xl w-full max-w-md mx-auto">
         <div class="p-6">
             <div class="flex items-center justify-between mb-5">
@@ -295,6 +287,23 @@
                 </button>
             </div>
 
+            <!-- Error Messages -->
+            @if ($errors->any())
+                <div class="mb-4 bg-red-50 border-l-4 border-red-500 p-3 rounded">
+                    <div class="flex items-start gap-2">
+                        <i class="fas fa-exclamation-circle text-red-600 mt-0.5"></i>
+                        <div class="flex-1">
+                            <p class="text-xs font-semibold text-red-800 mb-1">Terdapat kesalahan:</p>
+                            <ul class="list-disc list-inside text-xs text-red-700 space-y-0.5">
+                                @foreach ($errors->all() as $error)
+                                    <li>{{ $error }}</li>
+                                @endforeach
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            @endif
+
             <form method="POST" action="{{ route('tagihan.generate-bulk') }}">
                 @csrf
                 <div class="space-y-4">
@@ -304,9 +313,13 @@
                         </label>
                         <input type="month"
                                name="periode"
-                               class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gray-500 focus:border-transparent"
+                               value="{{ old('periode') }}"
+                               class="w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gray-500 focus:border-transparent @error('periode') border-red-500 @enderror"
                                required>
                         <p class="text-xs text-gray-500 mt-1">Format: Tahun-Bulan (contoh: 2025-01)</p>
+                        @error('periode')
+                            <p class="text-xs text-red-600 mt-1">{{ $message }}</p>
+                        @enderror
                     </div>
 
                     <div>
@@ -317,13 +330,17 @@
                             <span class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 text-sm">Rp</span>
                             <input type="number"
                                    name="jml_tagihan_pokok"
-                                   class="w-full border border-gray-300 rounded-lg pl-10 pr-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gray-500 focus:border-transparent"
-                                   value="10000"
+                                   value="{{ old('jml_tagihan_pokok', '10000') }}"
+                                   class="w-full border rounded-lg pl-10 pr-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gray-500 focus:border-transparent @error('jml_tagihan_pokok') border-red-500 @enderror"
                                    min="0"
-                                   step="1000"
+                                   step="1"
+                                   placeholder="contoh: 50000"
                                    required>
                         </div>
-                        <p class="text-xs text-gray-500 mt-1">Nominal tagihan untuk semua pelanggan aktif</p>
+                        <p class="text-xs text-gray-500 mt-1">Input nominal tanpa tanda titik (.)</p>
+                        {{-- @error('jml_tagihan_pokok')
+                            <p class="text-xs text-red-600 mt-1">{{ $message }}</p>
+                        @enderror --}}
                     </div>
                 </div>
 

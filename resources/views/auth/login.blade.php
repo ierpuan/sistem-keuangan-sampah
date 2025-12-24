@@ -69,21 +69,55 @@
                     Password
                 </label>
                 <div class="relative">
+                    <!-- Icon gembok (tetap) -->
                     <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                         <svg class="w-5 h-5 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
                             <path fill-rule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clip-rule="evenodd"/>
                         </svg>
                     </div>
+
+                    <!-- Input password -->
                     <input
                         type="password"
                         id="password"
                         name="password"
                         placeholder="Masukkan password"
                         required
-                        class="w-full bg-gray-50 border border-gray-300 rounded-lg pl-10 pr-3 py-3 text-sm text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-1 focus:ring-gray-500 focus:border-gray-500"
+                        class="w-full bg-gray-50 border border-gray-300 rounded-lg pl-10 pr-10 py-3 text-sm text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-1 focus:ring-gray-500 focus:border-gray-500"
                     >
+
+                    <!-- Icon mata -->
+                    <button
+                        type="button"
+                        onclick="togglePassword()"
+                        class="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600"
+                    >
+                        <svg id="eyeIcon" class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M10 3C5 3 1.73 7.11 1 10c.73 2.89 4 7 9 7s8.27-4.11 9-7c-.73-2.89-4-7-9-7zm0 11a4 4 0 110-8 4 4 0 010 8z"/>
+                        </svg>
+                    </button>
                 </div>
             </div>
+
+            <script>
+            function togglePassword() {
+                const passwordInput = document.getElementById('password');
+                const eyeIcon = document.getElementById('eyeIcon');
+
+                if (passwordInput.type === 'password') {
+                    passwordInput.type = 'text';
+                    eyeIcon.innerHTML = `
+                        <path d="M3.98 8.223A10.477 10.477 0 001 10c.73 2.89 4 7 9 7a9.77 9.77 0 004.47-1.02l-1.45-1.45A7.96 7.96 0 0110 14a4 4 0 01-3.46-6.02L3.98 8.223z"/>
+                    `;
+                } else {
+                    passwordInput.type = 'password';
+                    eyeIcon.innerHTML = `
+                        <path d="M10 3C5 3 1.73 7.11 1 10c.73 2.89 4 7 9 7s8.27-4.11 9-7c-.73-2.89-4-7-9-7zm0 11a4 4 0 110-8 4 4 0 010 8z"/>
+                    `;
+                }
+            }
+            </script>
+
 
             <!-- Submit Button -->
             <button

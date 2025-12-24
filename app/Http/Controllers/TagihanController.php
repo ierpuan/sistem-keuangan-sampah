@@ -32,7 +32,8 @@ class TagihanController extends Controller
 
         $tagihan = $query->orderBy('periode', 'desc')
                         ->orderBy('id_pelanggan', 'asc')
-                        ->paginate(20);
+                        ->paginate(20)
+                        ->withQueryString();
 
         $pelanggan_list = Pelanggan::aktif()->get();
         $periode_list = Tagihan::distinct()->pluck('periode')->sort()->reverse();
@@ -85,37 +86,58 @@ class TagihanController extends Controller
     }
 
     public function generateBulk(Request $request)
-    {
-        $validated = $request->validate([
-            'periode' => 'required|size:7|regex:/^\d{4}-\d{2}$/',
-            'jml_tagihan_pokok' => 'required|numeric|min:0',
-        ]);
+{
+    $validated = $request->validate([
+        'periode' => 'required|size:7|regex:/^\d{4}-\d{2}$/',
+        'jml_tagihan_pokok' => [
+            'required',
+            'numeric',
+            'min:0',
+            function ($attribute, $value, $fail) {
+                // Cek jika ada tanda titik atau koma
+                if (strpos((string)$value, '.') !== false || strpos((string)$value, ',') !== false) {
+                    $fail('Jumlah tagihan tidak boleh menggunakan tanda titik atau koma. Masukkan angka bulat saja (misal: 10000).');
+                }
+            },
+        ],
+    ]);
 
-        $pelanggan = Pelanggan::aktif()->get();
-        $periode = $validated['periode'];
-        $jatuh_tempo = Carbon::createFromFormat('Y-m', $periode)->endOfMonth();
-
-        $created = 0;
-        foreach ($pelanggan as $p) {
-            // Cek apakah sudah ada
-            $exists = Tagihan::where('id_pelanggan', $p->id_pelanggan)
-                            ->where('periode', $periode)
-                            ->exists();
-
-            if (!$exists) {
-                Tagihan::create([
-                    'id_pelanggan' => $p->id_pelanggan,
-                    'periode' => $periode,
-                    'jml_tagihan_pokok' => $validated['jml_tagihan_pokok'],
-                    'jatuh_tempo' => $jatuh_tempo,
-                ]);
-                $created++;
-            }
-        }
-
-        return redirect()->route('tagihan.index')
-                        ->with('success', "Berhasil generate {$created} tagihan untuk periode {$periode}.");
+    // Validasi tambahan: cek jika input mengandung desimal
+    $jmlTagihan = (float) $request->jml_tagihan_pokok;
+    if ($jmlTagihan > 0 && floor($jmlTagihan) != $jmlTagihan) {
+        return back()->withErrors([
+            'jml_tagihan_pokok' => 'Jumlah tagihan harus berupa angka bulat tanpa desimal'
+        ])->withInput();
     }
+
+    $pelanggan = Pelanggan::aktif()->get();
+    $periode = $validated['periode'];
+    $jatuh_tempo = Carbon::createFromFormat('Y-m', $periode)->endOfMonth();
+
+    $created = 0;
+    foreach ($pelanggan as $p) {
+        // Cek apakah sudah ada
+        $exists = Tagihan::where('id_pelanggan', $p->id_pelanggan)
+                        ->where('periode', $periode)
+                        ->exists();
+
+        if (!$exists) {
+            Tagihan::create([
+                'id_pelanggan' => $p->id_pelanggan,
+                'periode' => $periode,
+                'jml_tagihan_pokok' => $validated['jml_tagihan_pokok'],
+                'jatuh_tempo' => $jatuh_tempo,
+            ]);
+            $created++;
+        }
+    }
+
+    // Format periode untuk pesan
+    $periodeFormatted = Carbon::parse($periode . '-01')->translatedFormat('F Y');
+
+    return redirect()->route('tagihan.index')
+                    ->with('success', "Berhasil generate {$created} tagihan untuk periode {$periodeFormatted}.");
+}
 
     public function show(Tagihan $tagihan)
     {
@@ -137,28 +159,45 @@ class TagihanController extends Controller
         return view('tagihan.edit', compact('tagihan'));
     }
     public function update(Request $request, Tagihan $tagihan)
-    {
-        // Cegah update jika sudah ada pembayaran
-        if ($tagihan->transaksiPembayaran()->exists()) {
-            return redirect()
-                ->route('tagihan.show', $tagihan->id_tagihan)
-                ->with('error', 'Tagihan tidak dapat diubah karena sudah memiliki pembayaran.');
-        }
-
-        $validated = $request->validate([
-            'jml_tagihan_pokok' => 'required|numeric|min:0',
-            'jatuh_tempo'       => 'required|date',
-        ]);
-
-        $tagihan->update($validated);
-
-        // Update status setelah perubahan
-        $tagihan->updateStatus();
-
+{
+    // Cegah update jika sudah ada pembayaran
+    if ($tagihan->transaksiPembayaran()->exists()) {
         return redirect()
             ->route('tagihan.show', $tagihan->id_tagihan)
-            ->with('success', 'Tagihan berhasil diperbarui.');
+            ->with('error', 'Tagihan tidak dapat diubah karena sudah memiliki pembayaran.');
     }
+
+    $validated = $request->validate([
+        'jml_tagihan_pokok' => [
+            'required',
+            'numeric',
+            'min:0',
+            function ($attribute, $value, $fail) {
+                // Cek jika ada tanda titik atau koma
+                if (strpos((string)$value, '.') !== false || strpos((string)$value, ',') !== false) {
+                    $fail('Jumlah tagihan tidak boleh menggunakan tanda titik atau koma. Masukkan angka bulat saja (misal: 10000).');
+                }
+            },
+        ],
+    ]);
+
+    // Validasi tambahan: cek jika input mengandung desimal
+    $jmlTagihan = (float) $request->jml_tagihan_pokok;
+    if ($jmlTagihan > 0 && floor($jmlTagihan) != $jmlTagihan) {
+        return back()->withErrors([
+            'jml_tagihan_pokok' => 'Jumlah tagihan harus berupa angka bulat tanpa desimal'
+        ])->withInput();
+    }
+
+    $tagihan->update($validated);
+
+    // Update status setelah perubahan
+    $tagihan->updateStatus();
+
+    return redirect()
+        ->route('tagihan.show', $tagihan->id_tagihan)
+        ->with('success', 'Tagihan berhasil diperbarui.');
+}
 
     // public function destroy(Tagihan $tagihan)
     // {
